@@ -1,0 +1,41 @@
+# ---- Archivos objeto de compilacion ----
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.exp
+*.ilk
+*.pdb
+
+# ---- Ejecutables ----
+tesoro.exe
+*.exe
+
+# ---- Archivos temporales del compilador ----
+*.tmp
+*.swo
+*.swp
+*~
+
+# ---- Output generado por el programa ----
+data/resultado.txt
+
+# ---- Directorios de configuracion de IDE ----
+.vscode/
+.idea/
+*.code-workspace
+*.sln
+*.suo
+*.user
+*.userosettings
+*.userprefs
+
+# ---- Directorios del sistema ----
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# ---- Archivos de respaldo ----
+*.bak
+*.old

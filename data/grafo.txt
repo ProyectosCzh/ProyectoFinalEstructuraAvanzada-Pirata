@@ -1,0 +1,7 @@
+nodos: playa,montana,cueva,bosque,laguna,templo,tesoro
+playa:montana(3),cueva(5)
+montana:cueva(2),bosque(4)
+cueva:laguna(6),templo(1)
+bosque:laguna(2)
+laguna:templo(3),tesoro(4)
+templo:tesoro(2)

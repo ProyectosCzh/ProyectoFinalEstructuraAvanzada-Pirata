@@ -1,0 +1,7 @@
+playa:Sigue el sonido del agua
+montana:Busca donde el sol no llega
+cueva:El eco te guiara al este
+bosque:Las flores senalan el camino
+laguna:Reflejo de la luna te mostrara el camino
+templo:Detras del altar yace la respuesta
+tesoro:!Lo has encontrado!
