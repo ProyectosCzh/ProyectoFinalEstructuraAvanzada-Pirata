@@ -19,8 +19,6 @@ public:
     ~Diccionario();
     void insertar(const char* clave, const char* valor);
     const char* obtener(const char* clave) const;
-    bool contiene(const char* clave) const;
-    void eliminar(const char* clave);
 };
 
 #endif

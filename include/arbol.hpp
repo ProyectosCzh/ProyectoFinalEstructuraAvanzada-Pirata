@@ -23,7 +23,6 @@ public:
     NodoArbol* agregarHijo(NodoArbol* padre, const char* pista, const char* destino);
     NodoArbol* getRaiz() const;
     const char* interpretar(const char* pista) const;
-    void limpiar();
 };
 
 #endif

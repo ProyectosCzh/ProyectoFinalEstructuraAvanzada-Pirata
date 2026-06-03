@@ -34,14 +34,6 @@ int Cola::desencolar() {
     return valor;
 }
 
-int Cola::peek() const {
-    if (estaVacia()) {
-        printf("Error: cola vacia\n");
-        return -1;
-    }
-    return datos[frente];
-}
-
 bool Cola::estaVacia() const {
     return tam == 0;
 }

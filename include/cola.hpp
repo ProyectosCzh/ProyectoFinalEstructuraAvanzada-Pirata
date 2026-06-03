@@ -14,13 +14,9 @@ public:
     ~Cola();
     void encolar(int valor);
     int desencolar();
-    int peek() const;
     bool estaVacia() const;
     bool estaLlena() const;
     int obtenerTam() const;
-    int getFrente() const { return frente; }
-    int getFinal() const { return final; }
-    int getCapacidad() const { return capacidad; }
     int getDatoEn(int indice) const;
     void vaciar();
 };

@@ -50,34 +50,3 @@ const char* Diccionario::obtener(const char* clave) const {
     }
     return nullptr;
 }
-
-bool Diccionario::contiene(const char* clave) const {
-    int indice = hash(clave);
-    ParClaveValor* actual = tabla[indice];
-    while (actual != nullptr) {
-        if (std::strcmp(actual->clave, clave) == 0) {
-            return true;
-        }
-        actual = actual->siguiente;
-    }
-    return false;
-}
-
-void Diccionario::eliminar(const char* clave) {
-    int indice = hash(clave);
-    ParClaveValor* actual = tabla[indice];
-    ParClaveValor* anterior = nullptr;
-    while (actual != nullptr) {
-        if (std::strcmp(actual->clave, clave) == 0) {
-            if (anterior == nullptr) {
-                tabla[indice] = actual->siguiente;
-            } else {
-                anterior->siguiente = actual->siguiente;
-            }
-            delete actual;
-            return;
-        }
-        anterior = actual;
-        actual = actual->siguiente;
-    }
-}

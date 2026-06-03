@@ -17,13 +17,10 @@ public:
     Lista();
     ~Lista();
     void insertar(int dato);
-    void eliminar(int dato);
     bool contiene(int dato) const;
     int obtener(int indice) const;
     int longitud() const;
     void vaciar();
-    NodoLista* getCabeza() const;
-    NodoLista* getCola() const;
 };
 
 #endif

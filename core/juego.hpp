@@ -13,9 +13,9 @@ enum EstadoJuego {
     INICIO,
     EXPLORANDO_BFS,
     EXPLORANDO_DFS,
-    RUTA_OPTIMA,
-    COMPLETADO,
-    PAUSADO
+    EXPLORANDO_DIJKSTRA,
+    NAVEGANDO_PISTAS,
+    COMPLETADO
 };
 
 class Juego {
@@ -38,6 +38,7 @@ private:
 
     int padres[100];
     bool visitadosAnim[100];
+    bool enColaAnim[100];
     int distanciasAnim[100];
     int colaLocal[100];
     int pilaLocal[100];
@@ -47,7 +48,22 @@ private:
     int topeLocal;
     int pasoActual;
 
-    bool bfsEncontrado;
+    int dijkColaLocal[100];
+    int dijkTamCola;
+    int dijkUActual;
+    int dijkPasoActual;
+    int dijkVisitCount;
+
+    int nodoProcesandoIdx;
+    char nodoProcesandoNombre[64];
+
+    char pistaActiva[200];
+    int nodoPistaActual;
+    int nodoPistaSiguiente;
+
+private:
+    void iniciarAlgoritmo(EstadoJuego nuevoEstado, const char* algoNombre);
+    void finalizarExploracion(const char* algoNombre);
 
 public:
     Juego();
@@ -58,20 +74,22 @@ public:
     void iniciarBFS();
     void iniciarDFS();
     void iniciarDijkstra();
-    void navegarPorPistas();
+    void iniciarNavegacionPistas();
     void pasoAnimacion();
     void limpiar();
     bool guardarResultado();
 
     EstadoJuego getEstado() const { return estado; }
     int getNodoSeleccionado() const { return nodoSeleccionado; }
-    int getNodoInicio() const { return nodoInicio; }
     int getCostoTotal() const { return costoTotal; }
     int getNumVisitados() const { return numVisitados; }
     int getPasoActual() const { return pasoActual; }
-    const char* getAlgoritmoUsado() const { return algoritmoUsado; }
     const char* getPistaNodo(int indice) const;
+    const char* getNodoProcesando() const { return nodoProcesandoNombre; }
+    int getNodoProcesandoIdx() const { return nodoProcesandoIdx; }
+    const char* getPistaActiva() const { return pistaActiva; }
     bool getVisitado(int indice) const { return visitadosAnim[indice]; }
+    bool getEnCola(int indice) const { return enColaAnim[indice]; }
     bool getEnRuta(int indice) const;
 
     Grafo& getGrafo() { return grafo; }

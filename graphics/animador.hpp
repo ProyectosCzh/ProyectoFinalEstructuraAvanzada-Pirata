@@ -6,7 +6,6 @@
 class Animador {
 private:
     bool reproduciendo;
-    bool pasoAPaso;
     int velocidad;
     double tiempoUltimoPaso;
     int pasoActual;
@@ -17,13 +16,9 @@ public:
     void iniciar(int totalPasos);
     void pausar();
     void reanudar();
-    void togglePasoAPaso();
-    bool siguientePaso();
-    void setVelocidad(int ms);
     void setVelocidadRelativa(int delta);
     bool actualizar();
     bool estaReproduciendo() const { return reproduciendo; }
-    int getPasoActual() const { return pasoActual; }
     void dibujarControles(Rectangle area);
 };
 

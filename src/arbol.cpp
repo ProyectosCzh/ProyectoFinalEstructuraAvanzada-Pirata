@@ -85,9 +85,4 @@ const char* Arbol::interpretar(const char* pista) const {
     return nullptr;
 }
 
-void Arbol::limpiar() {
-    if (raiz != nullptr) {
-        limpiarRecursivo(raiz);
-        raiz = nullptr;
-    }
-}
+
