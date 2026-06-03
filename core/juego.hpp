@@ -86,6 +86,7 @@ public:
     const char* getAlgoritmoUsado() const { return algoritmoUsado; }
     const char* getPistaNodo(int indice) const;
     const char* getNodoProcesando() const { return nodoProcesandoNombre; }
+    int getNodoProcesandoIdx() const { return nodoProcesandoIdx; }
     const char* getPistaActiva() const { return pistaActiva; }
     int getNodoPistaActual() const { return nodoPistaActual; }
     int getNodoPistaSiguiente() const { return nodoPistaSiguiente; }

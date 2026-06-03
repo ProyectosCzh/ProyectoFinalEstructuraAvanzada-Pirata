@@ -18,6 +18,7 @@ public:
     UIArbol(Arbol* a, Rectangle area);
     void dibujar();
     void setNodoActivo(const char* pista);
+    void limpiarNodoActivo() { pistaActiva = nullptr; }
     void actualizarScroll(Vector2 delta) { scroll.x += delta.x; scroll.y += delta.y; }
     void resetearScroll() { scroll = { 0, 0 }; }
 };

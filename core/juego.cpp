@@ -369,7 +369,6 @@ void Juego::pasoAnimacion() {
             estado = COMPLETADO;
             return;
         }
-        int prev = nodoPistaActual;
         nodoPistaActual = nodoPistaSiguiente;
         nodoPistaSiguiente = -1;
         visitadosAnim[nodoPistaActual] = true;
@@ -410,6 +409,9 @@ void Juego::limpiar() {
     costoTotal = 0;
     numVisitados = 0;
     pasoActual = 0;
+    frenteActual = 0;
+    tamFrente = 0;
+    topeLocal = -1;
     colaAnimacion.vaciar();
     pilaAnimacion.vaciar();
     rutaOptima.vaciar();
@@ -426,6 +428,7 @@ void Juego::limpiar() {
     for (int i = 0; i < n; i++) {
         visitadosAnim[i] = false;
         enColaAnim[i] = false;
+        expandidos[i] = false;
     }
 }
 

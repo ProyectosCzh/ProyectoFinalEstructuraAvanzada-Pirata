@@ -78,11 +78,11 @@ void Animador::dibujarControles(Rectangle area) {
     float x = area.x + 8;
     float y = area.y + 6;
 
-    const char* titulo = reproduciendo ? ">> REPRODUCIENDO" :
-                         pasoAPaso     ? "|| PASO A PASO" :
-                                         "-- PAUSADO";
-    Color colTit = reproduciendo ? COLOR_NODO_VISITADO : COLOR_DORADO;
-    DrawText(titulo, (int)x, (int)y, 13, colTit);
+    const char* modo = reproduciendo ? "AUTO" : "MANUAL";
+    const char* estado = reproduciendo ? "REPRODUCIENDO" : "PAUSADO";
+    Color colModo = reproduciendo ? COLOR_NODO_VISITADO : COLOR_DORADO;
+    DrawText(modo, (int)x, (int)y, 14, colModo);
+    DrawText(estado, (int)(x + 50), (int)y, 14, COLOR_TEXTO);
     y += 20;
 
     char info[80];

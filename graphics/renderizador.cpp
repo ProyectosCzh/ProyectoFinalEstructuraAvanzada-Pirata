@@ -266,19 +266,19 @@ void Renderizador::dibujarConEstado(Juego& juego) {
 
 void Renderizador::sincronizarConJuego(Juego& juego) {
     for (int i = 0; i < numNodos; i++) {
-        if (juego.getNodoSeleccionado() == i) {
-            nodosVisuales[i].color = COLOR_NODO_SELECCION;
-        } else if (juego.getEnRuta(i)) {
+        const char* nombre = grafo->getNombreNodo(i);
+        bool esTesoro = (nombre != nullptr && std::strcmp(nombre, "tesoro") == 0);
+
+        if (juego.getEnRuta(i)) {
             nodosVisuales[i].color = COLOR_NODO_RUTA;
+        } else if (juego.getNodoProcesandoIdx() == i && juego.getVisitado(i)) {
+            nodosVisuales[i].color = COLOR_NODO_PROCESANDO;
         } else if (juego.getVisitado(i)) {
-            const char* nombre = grafo->getNombreNodo(i);
-            if (nombre != nullptr && std::strcmp(nombre, "tesoro") == 0) {
-                nodosVisuales[i].color = COLOR_TESORO;
-            } else {
-                nodosVisuales[i].color = COLOR_NODO_VISITADO;
-            }
+            nodosVisuales[i].color = esTesoro ? COLOR_TESORO : COLOR_NODO_VISITADO;
         } else if (juego.getEnCola(i)) {
             nodosVisuales[i].color = COLOR_NODO_EN_COLA;
+        } else if (esTesoro) {
+            nodosVisuales[i].color = COLOR_TESORO;
         } else {
             nodosVisuales[i].color = COLOR_NODO_NO_VIS;
         }
@@ -292,7 +292,7 @@ int Renderizador::nodoBajoMouse(Vector2 mousePos) const {
         float dx = pWorld.x - nodosVisuales[i].posicion.x;
         float dy = pWorld.y - nodosVisuales[i].posicion.y;
         float dist = std::sqrt(dx * dx + dy * dy);
-        if (dist <= nodosVisuales[i].radio * zoom + 4.0f) {
+        if (dist <= nodosVisuales[i].radio + 8.0f) {
             return i;
         }
     }

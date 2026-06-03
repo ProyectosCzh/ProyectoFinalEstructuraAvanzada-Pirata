@@ -88,9 +88,9 @@ int main() {
     inicializarBoton(botones[1],  bx, by, bw, bh, "DFS");          bx += bw + sep;
     inicializarBoton(botones[2],  bx, by, bw, bh, "DIJKSTRA");     bx += bw + sep;
     inicializarBoton(botones[3],  bx, by, bw, bh, "PISTAS");       bx += bw + sep;
-    inicializarBoton(botones[4],  bx, by, bw*0.6f, bh, "<<");       bx += bw*0.6f + sep;
+    inicializarBoton(botones[4],  bx, by, bw*0.6f, bh, "||");       bx += bw*0.6f + sep;
     inicializarBoton(botones[5],  bx, by, bw*0.6f, bh, ">>");       bx += bw*0.6f + sep;
-    inicializarBoton(botones[6],  bx, by, bw*0.6f, bh, ">");        bx += bw*0.6f + sep;
+    inicializarBoton(botones[6],  bx, by, bw*0.6f, bh, "AUTO");     bx += bw*0.6f + sep;
     inicializarBoton(botones[7],  bx, by, bw*0.5f, bh, "-");        bx += bw*0.5f + sep;
     inicializarBoton(botones[8],  bx, by, bw*0.5f, bh, "+");        bx += bw*0.5f + sep;
     inicializarBoton(botones[9],  bx, by, bw, bh, "LIMPIAR");      bx += bw + sep;
@@ -192,6 +192,7 @@ int main() {
                             case 9:
                                 juego.limpiar();
                                 renderizador.resetearColores();
+                                uiArbol.limpiarNodoActivo();
                                 uiArbol.resetearScroll();
                                 animador.pausar();
                                 necesitaNodoSeleccion = true;
@@ -260,6 +261,7 @@ int main() {
         if (IsKeyPressed(KEY_C)) {
             juego.limpiar();
             renderizador.resetearColores();
+            uiArbol.limpiarNodoActivo();
             uiArbol.resetearScroll();
             animador.pausar();
             necesitaNodoSeleccion = true;

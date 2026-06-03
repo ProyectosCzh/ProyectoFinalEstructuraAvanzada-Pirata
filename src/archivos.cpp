@@ -114,6 +114,7 @@ bool cargarArbolPistas(const char* ruta, Arbol& arbol) {
 
     char linea[512];
     int numEntradas = 0;
+    NodoArbol* nodoAnterior = nullptr;
 
     while (std::fgets(linea, sizeof(linea), archivo) != nullptr) {
         if (linea[0] == '\n' || linea[0] == '\0' || linea[0] == '#') {
@@ -136,8 +137,10 @@ bool cargarArbolPistas(const char* ruta, Arbol& arbol) {
 
         if (numEntradas == 0) {
             arbol.crearRaiz("inicio", clave);
+            nodoAnterior = arbol.agregarHijo(arbol.getRaiz(), pista, destino);
+        } else {
+            nodoAnterior = arbol.agregarHijo(nodoAnterior, pista, destino);
         }
-        arbol.agregarHijo(arbol.getRaiz(), pista, destino);
         numEntradas++;
     }
 

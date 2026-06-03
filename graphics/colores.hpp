@@ -12,6 +12,7 @@ const Color COLOR_NODO_EN_COLA    = {255, 220,  60, 255};
 const Color COLOR_NODO_VISITADO   = { 80, 200, 120, 255};
 const Color COLOR_NODO_RUTA       = {220,  60,  60, 255};
 const Color COLOR_NODO_SELECCION  = { 80, 150, 255, 255};
+const Color COLOR_NODO_PROCESANDO = {255, 140,   0, 255};
 const Color COLOR_NODO_HOVER      = {180, 220, 255, 255};
 const Color COLOR_NODO_INICIO     = {255, 255, 255, 255};
 

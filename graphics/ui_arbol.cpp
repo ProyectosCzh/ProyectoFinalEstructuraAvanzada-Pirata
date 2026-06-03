@@ -14,8 +14,9 @@ void UIArbol::dibujar() {
     DrawRectangleRec(area, COLOR_PANEL_FONDO);
     DrawRectangleLinesEx(area, 2, COLOR_MARCO);
 
-    DrawText("ARBOL DE DECISION", (int)area.x + 8, (int)area.y + 5, 18, COLOR_DORADO);
+    DrawText("ARBOL DE PISTAS", (int)area.x + 8, (int)area.y + 5, 18, COLOR_DORADO);
     DrawText("Rueda mouse: scroll", (int)area.x + 8, (int)(area.y + area.height - 18), 11, COLOR_TEXTO_OSCURO);
+    DrawText("Cada pista lleva a la siguiente ubicacion", (int)area.x + 8, (int)(area.y + area.height - 34), 11, COLOR_TEXTO_OSCURO);
 
     if (arbol == nullptr || arbol->getRaiz() == nullptr) {
         DrawText("(sin datos)", (int)area.x + 20, (int)area.y + 40, 14, COLOR_TEXTO_OSCURO);
@@ -28,7 +29,7 @@ void UIArbol::dibujar() {
     float margenX = 14;
     float margenY = 40;
     float anchoDisp = area.width - margenX * 2;
-    float altoDisp = area.height - margenY - 28;
+    float altoDisp = area.height - margenY - 44;
 
     BeginScissorMode((int)(area.x + margenX), (int)(area.y + margenY),
                      (int)anchoDisp, (int)altoDisp);
@@ -36,12 +37,12 @@ void UIArbol::dibujar() {
     int numHijosRaiz = raiz->numHijos;
     for (int i = 0; i < numHijosRaiz; i++) {
         int niveles = contarNiveles(raiz->hijos[i]);
-        float dx = anchoDisp / (numHijosRaiz + 1);
-        float x = area.x + margenX + dx * (i + 1) + scroll.x;
+        float dx = anchoDisp * 0.5f;
+        float x = area.x + margenX + anchoDisp * 0.5f + scroll.x;
         float y = area.y + margenY + 20 + scroll.y;
         float dy = (altoDisp - 30) / (niveles > 1 ? niveles : 1);
 
-        dibujarNodo(raiz->hijos[i], x, y, dx * 0.5f, dy, 1, niveles);
+        dibujarNodo(raiz->hijos[i], x, y, dx, dy, 1, niveles);
     }
 
     EndScissorMode();
@@ -94,8 +95,14 @@ void UIArbol::dibujarNodo(NodoArbol* nodo, float x, float y, float dx, float dy,
     }
 
     for (int i = 0; i < nodo->numHijos; i++) {
-        float hx = x - dx + 2 * dx * i / (nodo->numHijos > 1 ? nodo->numHijos - 1 : 1);
-        float hy = y + dy;
+        float hx, hy;
+        if (nodo->numHijos == 1) {
+            hx = x;
+            hy = y + dy;
+        } else {
+            hx = x - dx + 2 * dx * i / (nodo->numHijos - 1);
+            hy = y + dy;
+        }
 
         Color colorLinea = COLOR_ARBOL_LINEA;
         if (activo) {
