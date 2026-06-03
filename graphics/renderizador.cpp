@@ -18,11 +18,21 @@ Renderizador::Renderizador(Grafo* g, float ancho, float alto) {
     zoom = 1.0f;
     nodoHover = -1;
     tiempoInicio = GetTime();
-    calcularLayoutRejilla();
+    modoEdicion = false;
+    nodoArrastrando = -1;
+
+    fondoCargado = false;
+
+    if (grafo->tieneCoordenadas()) {
+        usarCoordenadasDesdeGrafo();
+    } else {
+        calcularLayoutRejilla();
+    }
     resetearColores();
 }
 
 Renderizador::~Renderizador() {
+    if (fondoCargado) UnloadTexture(texturaFondo);
     delete[] nodosVisuales;
 }
 
@@ -52,6 +62,47 @@ void Renderizador::calcularLayoutRejilla() {
         nodosVisuales[i].radio = radio;
         nodosVisuales[i].seleccionado = false;
     }
+}
+
+void Renderizador::usarCoordenadasDesdeGrafo() {
+    if (numNodos == 0) return;
+    for (int i = 0; i < numNodos; i++) {
+        float vx = grafo->getCoordX(i);
+        float vy = grafo->getCoordY(i);
+        nodosVisuales[i].posicion.x = (vx / 1000.0f) * anchoPanel;
+        nodosVisuales[i].posicion.y = (vy / 1000.0f) * altoPanel;
+        nodosVisuales[i].radio = 22.0f;
+        nodosVisuales[i].seleccionado = false;
+    }
+}
+
+void Renderizador::dibujarFondo() {
+    if (!fondoCargado) {
+        Image img = LoadImage("MAPAISLA2.jpg");
+        if (img.data != nullptr) {
+            texturaFondo = LoadTextureFromImage(img);
+            UnloadImage(img);
+            fondoCargado = (texturaFondo.id > 0);
+            if (fondoCargado) {
+                printf("Textura de fondo cargada: %dx%d\n", texturaFondo.width, texturaFondo.height);
+            }
+        }
+    }
+    if (!fondoCargado) return;
+
+    float scaleX = anchoPanel / (float)texturaFondo.width;
+    float scaleY = altoPanel / (float)texturaFondo.height;
+    float scale = fminf(scaleX, scaleY);
+
+    float destW = texturaFondo.width * scale;
+    float destH = texturaFondo.height * scale;
+    float ox = (anchoPanel - destW) * 0.5f;
+    float oy = (altoPanel - destH) * 0.5f;
+
+    DrawTexturePro(texturaFondo,
+        { 0, 0, (float)texturaFondo.width, (float)texturaFondo.height },
+        { ox, oy, destW, destH },
+        { 0, 0 }, 0.0f, WHITE);
 }
 
 void Renderizador::aplicarTransform(Vector2& p) const {
@@ -239,6 +290,7 @@ void Renderizador::actualizarInput(Vector2 mousePos) {
 
 void Renderizador::dibujarConEstado(Juego& juego) {
     sincronizarConJuego(juego);
+    dibujarFondo();
     const Lista& ruta = juego.getRutaOptima();
     bool dirFlag = grafo->esDirigido();
     dibujarAristas(&ruta, dirFlag);
@@ -298,4 +350,28 @@ void Renderizador::resetearColores() {
             nodosVisuales[i].color = COLOR_NODO_NO_VIS;
         }
     }
+}
+
+bool Renderizador::iniciarArrastreNodo(Vector2 mousePos) {
+    if (!modoEdicion) return false;
+    int idx = nodoBajoMouse(mousePos);
+    if (idx >= 0) {
+        nodoArrastrando = idx;
+        return true;
+    }
+    return false;
+}
+
+void Renderizador::actualizarArrastreNodo(Vector2 mousePos) {
+    if (nodoArrastrando < 0) return;
+    Vector2 p = mousePos;
+    deshacerTransform(p);
+    nodosVisuales[nodoArrastrando].posicion = p;
+    float virtX = (p.x / anchoPanel) * 1000.0f;
+    float virtY = (p.y / altoPanel) * 1000.0f;
+    grafo->setCoordenada(nodoArrastrando, virtX, virtY);
+}
+
+void Renderizador::finalizarArrastreNodo() {
+    nodoArrastrando = -1;
 }

@@ -51,6 +51,10 @@ bool Juego::cargarDatos() {
         ok = false;
     }
 
+    if (!cargarCoordenadas("data/coords.txt", grafo)) {
+        printf("Sin coordenadas externas, se usara layout rejilla\n");
+    }
+
     explorador.configurar(&grafo, &colaAnimacion, &pilaAnimacion);
 
     nodoTesoro = grafo.buscarNodo("tesoro");
@@ -381,6 +385,10 @@ void Juego::limpiar() {
 
 bool Juego::guardarResultado() {
     return ::guardarResultado("data/resultado.txt", rutaOptima, grafo, algoritmoUsado, costoTotal, numVisitados);
+}
+
+bool Juego::guardarCoordenadas(const char* ruta) {
+    return ::guardarCoordenadas(ruta, grafo);
 }
 
 const char* Juego::getPistaNodo(int indice) const {

@@ -1,0 +1,31 @@
+# Coordenadas virtuales 0-1000
+# Formato: nombre=x y
+
+playa=780.0 720.0
+pueblo_pirata=944.0 604.2
+bahia=650.0 700.0
+acantilado=580.0 680.0
+r_caleta=695.3 859.7
+r_costa=437.5 761.1
+p_bosque=971.4 523.6
+montana=720.1 383.3
+desfiladero=494.8 -5.6
+cima_arbol=247.4 144.4
+cueva=369.8 202.8
+caverna=474.0 130.0
+bosque=540.0 540.0
+l_esmeralda=661.5 616.7
+rio=813.5 464.4
+cascada=950.5 44.4
+valle=710.9 20.8
+pantano=500.0 580.0
+ruinas=931.0 372.2
+laguna=401.0 509.7
+templo=364.6 283.3
+mirador=329.4 713.9
+atalaya=93.7 263.9
+fortin=152.3 659.7
+mercado=19.5 438.9
+ermita=89.8 847.2
+gruta_coral=332.0 848.6
+tesoro=779.9 954.2

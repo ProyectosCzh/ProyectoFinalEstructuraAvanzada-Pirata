@@ -7,7 +7,7 @@ const Color COLOR_FONDO           = { 24,  35,  60, 255};
 const Color COLOR_FONDO_SUPERIOR  = { 35,  50,  85, 255};
 const Color COLOR_FONDO_INFERIOR  = { 10,  15,  30, 255};
 
-const Color COLOR_NODO_NO_VIS     = {130, 130, 150, 255};
+const Color COLOR_NODO_NO_VIS     = { 40,  40,  55, 255};
 const Color COLOR_NODO_EN_COLA    = {255, 220,  60, 255};
 const Color COLOR_NODO_VISITADO   = { 80, 200, 120, 255};
 const Color COLOR_NODO_RUTA       = {220,  60,  60, 255};

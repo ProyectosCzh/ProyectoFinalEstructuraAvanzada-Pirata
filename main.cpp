@@ -77,7 +77,7 @@ int main() {
     UIArbol      uiArbol(&juego.getArbolPistas(), { anchoGrafo, altoPanelSup, anchoPanel, altoPanelInf });
     Animador     animador;
 
-    const int NUM_BOTONES = 13;
+    const int NUM_BOTONES = 15;
     Boton botones[NUM_BOTONES];
     float bw = 105.0f, bh = altoBarraBotones - 14;
     float by = yBarraBotones + 7;
@@ -95,8 +95,10 @@ int main() {
     inicializarBoton(botones[8],  bx, by, bw*0.5f, bh, "+");        bx += bw*0.5f + sep;
     inicializarBoton(botones[9],  bx, by, bw, bh, "LIMPIAR");      bx += bw + sep;
     inicializarBoton(botones[10], bx, by, bw, bh, "GUARDAR");      bx += bw + sep;
-    inicializarBoton(botones[11], bx, by, bw*0.7f, bh, "RESET");    bx += bw*0.7f + sep;
-    inicializarBoton(botones[12], bx, by, bw, bh, "SALIR");
+    inicializarBoton(botones[11], bx, by, bw*0.7f, bh, "EDITAR");   bx += bw*0.7f + sep;
+    inicializarBoton(botones[12], bx, by, bw, bh, "G.CORDS");      bx += bw + sep;
+    inicializarBoton(botones[13], bx, by, bw*0.7f, bh, "RESET");    bx += bw*0.7f + sep;
+    inicializarBoton(botones[14], bx, by, bw, bh, "SALIR");
 
     InitWindow(ANCHO, ALTO, "El Tesoro del Pirata - El Mapa del Capitan");
     SetTargetFPS(60);
@@ -104,6 +106,7 @@ int main() {
     Vector2 lastMouse = { 0, 0 };
     bool arrastrandoMapa = false;
     bool necesitaNodoSeleccion = true;
+    bool modoEdicion = false;
 
     while (!WindowShouldClose()) {
         Vector2 mouse = GetMousePosition();
@@ -123,12 +126,15 @@ int main() {
 
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             if (sobreGrafo) {
-                int nodo = renderizador.nodoBajoMouse(mouse);
-                if (nodo >= 0) {
-                    juego.seleccionarNodo(nodo);
-                    renderizador.resetearColores();
-                    renderizador.setSeleccionado(nodo, true);
-                    necesitaNodoSeleccion = false;
+                if (modoEdicion && renderizador.iniciarArrastreNodo(mouse)) {
+                } else {
+                    int nodo = renderizador.nodoBajoMouse(mouse);
+                    if (nodo >= 0) {
+                        juego.seleccionarNodo(nodo);
+                        renderizador.resetearColores();
+                        renderizador.setSeleccionado(nodo, true);
+                        necesitaNodoSeleccion = false;
+                    }
                 }
             } else if (sobreArbol) {
                 for (int i = 0; i < NUM_BOTONES; i++) {
@@ -145,6 +151,13 @@ int main() {
                     }
                 }
             }
+        }
+
+        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && renderizador.estaArrastrandoNodo()) {
+            renderizador.actualizarArrastreNodo(mouse);
+        }
+        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && renderizador.estaArrastrandoNodo()) {
+            renderizador.finalizarArrastreNodo();
         }
 
         if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
@@ -201,10 +214,17 @@ int main() {
                                 juego.guardarResultado();
                                 break;
                             case 11:
+                                modoEdicion = !modoEdicion;
+                                renderizador.setModoEdicion(modoEdicion);
+                                break;
+                            case 12:
+                                juego.guardarCoordenadas("data/coords.txt");
+                                break;
+                            case 13:
                                 renderizador.resetearVista();
                                 uiArbol.resetearScroll();
                                 break;
-                            case 12:
+                            case 14:
                                 CloseWindow();
                                 return 0;
                         }
@@ -267,6 +287,13 @@ int main() {
             necesitaNodoSeleccion = true;
         }
         if (IsKeyPressed(KEY_S)) juego.guardarResultado();
+        if (IsKeyPressed(KEY_K)) {
+            juego.guardarCoordenadas("data/coords.txt");
+        }
+        if (IsKeyPressed(KEY_E)) {
+            modoEdicion = !modoEdicion;
+            renderizador.setModoEdicion(modoEdicion);
+        }
         if (IsKeyPressed(KEY_V)) {
             renderizador.resetearVista();
             uiArbol.resetearScroll();
@@ -367,6 +394,12 @@ int main() {
         char zoomStr[32];
         std::sprintf(zoomStr, "Zoom: %.0f%%", zoom * 100.0f);
         DrawText(zoomStr, ANCHO - 130, 12, 14, COLOR_TEXTO);
+
+        if (modoEdicion) {
+            const char* msjEd = ">> MODO EDICION - Arrastra nodos para reposicionarlos  [E] salir  [K] guardar <<";
+            int mwEd = MeasureText(msjEd, 14);
+            DrawText(msjEd, ANCHO/2 - mwEd/2, 46, 14, COLOR_NODO_EN_COLA);
+        }
 
         if (necesitaNodoSeleccion) {
             const char* msj = ">> Haz CLICK en un nodo del mapa para empezar <<";

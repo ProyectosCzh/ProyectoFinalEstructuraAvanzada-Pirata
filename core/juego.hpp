@@ -78,6 +78,7 @@ public:
     void pasoAnimacion();
     void limpiar();
     bool guardarResultado();
+    bool guardarCoordenadas(const char* ruta);
 
     EstadoJuego getEstado() const { return estado; }
     int getNodoSeleccionado() const { return nodoSeleccionado; }

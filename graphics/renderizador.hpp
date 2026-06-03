@@ -26,7 +26,15 @@ private:
     int nodoHover;
     double tiempoInicio;
 
+    Texture2D texturaFondo;
+    bool fondoCargado;
+
+    bool modoEdicion;
+    int nodoArrastrando;
+
     void calcularLayoutRejilla();
+    void usarCoordenadasDesdeGrafo();
+    void dibujarFondo();
     void dibujarAristas(const Lista* ruta, bool dirigido);
     void dibujarFlecha(Vector2 desde, Vector2 hasta, float radioDestino, Color color);
     void dibujarNodos();
@@ -49,6 +57,13 @@ public:
     void setZoom(float z) { if (z >= 0.4f && z <= 2.5f) zoom = z; }
     void resetearVista() { offset = {0, 0}; zoom = 1.0f; }
     float getZoom() const { return zoom; }
+
+    bool iniciarArrastreNodo(Vector2 mousePos);
+    void actualizarArrastreNodo(Vector2 mousePos);
+    void finalizarArrastreNodo();
+    bool estaArrastrandoNodo() const { return nodoArrastrando >= 0; }
+    void setModoEdicion(bool ed) { modoEdicion = ed; }
+    bool getModoEdicion() const { return modoEdicion; }
 };
 
 #endif

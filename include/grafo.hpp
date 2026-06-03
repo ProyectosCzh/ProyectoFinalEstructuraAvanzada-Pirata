@@ -9,6 +9,7 @@ struct Arista {
 
 struct NodoGrafo {
     char nombre[50];
+    float x, y;
     Arista* aristas;
 };
 
@@ -18,6 +19,7 @@ private:
     int numNodos;
     int capacidad;
     bool dirigido;
+    bool coordsDefinidas;
 
 public:
     Grafo(int capacidad = 100);
@@ -30,6 +32,11 @@ public:
     int getNumNodos() const;
     void setDirigido(bool d) { dirigido = d; }
     bool esDirigido() const { return dirigido; }
+    void setCoordenada(int indice, float x, float y);
+    float getCoordX(int indice) const;
+    float getCoordY(int indice) const;
+    bool tieneCoordenadas() const;
+    void marcarCoordenadas(bool val);
 };
 
 #endif
