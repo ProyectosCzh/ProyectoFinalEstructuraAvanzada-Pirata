@@ -3,7 +3,6 @@
 
 struct NodoLista {
     int dato;
-    NodoLista* anterior;
     NodoLista* siguiente;
 };
 

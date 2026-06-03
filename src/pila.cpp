@@ -30,14 +30,6 @@ int Pila::pop() {
     return valor;
 }
 
-int Pila::top() const {
-    if (estaVacia()) {
-        printf("Error: pila vacia\n");
-        return -1;
-    }
-    return datos[tope];
-}
-
 bool Pila::estaVacia() const {
     return tope == -1;
 }

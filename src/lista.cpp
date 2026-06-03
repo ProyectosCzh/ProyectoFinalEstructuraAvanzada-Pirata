@@ -14,7 +14,6 @@ Lista::~Lista() {
 void Lista::insertar(int dato) {
     NodoLista* nuevo = new NodoLista;
     nuevo->dato = dato;
-    nuevo->anterior = nullptr;
     nuevo->siguiente = nullptr;
 
     if (cabeza == nullptr) {
@@ -22,7 +21,6 @@ void Lista::insertar(int dato) {
         cola = nuevo;
     } else {
         cola->siguiente = nuevo;
-        nuevo->anterior = cola;
         cola = nuevo;
     }
     tam++;

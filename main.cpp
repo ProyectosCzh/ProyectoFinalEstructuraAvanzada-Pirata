@@ -27,7 +27,7 @@ static void inicializarBoton(Boton& b, float x, float y, float w, float h, const
     b.presionado = false;
 }
 
-static void dibujarBoton(Boton& b, Vector2 mouse, bool mouseDown) {
+static void dibujarBoton(Boton& b, Vector2 mouse) {
     if (!b.habilitado) {
         DrawRectangleRec(b.area, { 40, 40, 50, 255 });
         DrawRectangleLinesEx(b.area, 1, COLOR_MARCO);
@@ -134,13 +134,6 @@ int main() {
                         renderizador.resetearColores();
                         renderizador.setSeleccionado(nodo, true);
                         necesitaNodoSeleccion = false;
-                    }
-                }
-            } else if (sobreArbol) {
-                for (int i = 0; i < NUM_BOTONES; i++) {
-                    if (clickEnBoton(botones[i], mouse)) {
-                        botones[i].presionado = true;
-                        break;
                     }
                 }
             } else {
@@ -385,7 +378,7 @@ int main() {
         DrawRectangle(0, (int)yBarraBotones, ANCHO, (int)altoBarraBotones, COLOR_PANEL_FONDO);
         DrawLine(0, (int)yBarraBotones, ANCHO, (int)yBarraBotones, COLOR_MARCO);
         for (int i = 0; i < NUM_BOTONES; i++) {
-            dibujarBoton(botones[i], mouse, IsMouseButtonDown(MOUSE_LEFT_BUTTON));
+            dibujarBoton(botones[i], mouse);
         }
 
         animador.dibujarControles({ 0, yBarraAnimador, (float)ANCHO, altoBarraAnimador });
