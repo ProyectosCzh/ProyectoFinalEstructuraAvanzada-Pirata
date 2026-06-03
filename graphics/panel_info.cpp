@@ -29,40 +29,62 @@ void PanelInfo::dibujar(const char* titulo, const char* pistaActual,
     y += 32;
 
     char buffer[256];
+    char etiqueta[64];
 
     if (nodoNombre != nullptr) {
-        std::sprintf(buffer, "Nodo: %s", nodoNombre);
-        DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
+        std::sprintf(etiqueta, "Nodo:");
+        std::sprintf(buffer, " %s", nodoNombre);
+        int anchoEtiq = MeasureText(etiqueta, fuenteTam);
+        DrawText(etiqueta, (int)x, (int)y, fuenteTam, COLOR_TEXTO_OSCURO);
+        DrawText(buffer, (int)x + anchoEtiq, (int)y, fuenteTam, COLOR_TEXTO);
         y += 24;
     }
 
     if (pistaActual != nullptr) {
-        std::sprintf(buffer, "Pista: %s", pistaActual);
-        DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
+        std::sprintf(etiqueta, "Pista:");
+        std::sprintf(buffer, " %s", pistaActual);
+        int anchoEtiq = MeasureText(etiqueta, fuenteTam);
+        DrawText(etiqueta, (int)x, (int)y, fuenteTam, COLOR_TEXTO_OSCURO);
+        DrawText(buffer, (int)x + anchoEtiq, (int)y, fuenteTam, COLOR_TEXTO);
         y += 24;
     }
 
-    std::sprintf(buffer, "Costo: %d", costo);
-    DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
+    std::sprintf(etiqueta, "Costo:");
+    std::sprintf(buffer, " %d", costo);
+    int anchoEtiq = MeasureText(etiqueta, fuenteTam);
+    DrawText(etiqueta, (int)x, (int)y, fuenteTam, COLOR_TEXTO_OSCURO);
+    DrawText(buffer, (int)x + anchoEtiq, (int)y, fuenteTam, COLOR_TEXTO);
     y += 24;
 
     if (estadoStr != nullptr) {
-        std::sprintf(buffer, "Estado: %s", estadoStr);
-        DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
+        std::sprintf(etiqueta, "Estado:");
+        std::sprintf(buffer, " %s", estadoStr);
+        int anchoE = MeasureText(etiqueta, fuenteTam);
+        DrawText(etiqueta, (int)x, (int)y, fuenteTam, COLOR_TEXTO_OSCURO);
+        DrawText(buffer, (int)x + anchoE, (int)y, 16, COLOR_NODO_VISITADO);
         y += 24;
     }
 
-    std::sprintf(buffer, "Visitados: %d", visitados);
-    DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
+    std::sprintf(etiqueta, "Visitados:");
+    std::sprintf(buffer, " %d", visitados);
+    int anchoV = MeasureText(etiqueta, fuenteTam);
+    DrawText(etiqueta, (int)x, (int)y, fuenteTam, COLOR_TEXTO_OSCURO);
+    DrawText(buffer, (int)x + anchoV, (int)y, fuenteTam, COLOR_TEXTO);
     y += 24;
 
-    std::sprintf(buffer, "Paso: %d", pasoActual);
-    DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
+    std::sprintf(etiqueta, "Paso:");
+    std::sprintf(buffer, " %d", pasoActual);
+    int anchoP = MeasureText(etiqueta, fuenteTam);
+    DrawText(etiqueta, (int)x, (int)y, fuenteTam, COLOR_TEXTO_OSCURO);
+    DrawText(buffer, (int)x + anchoP, (int)y, fuenteTam, COLOR_TEXTO);
     y += 24;
 
     if (nodoProcesando != nullptr) {
-        std::sprintf(buffer, "Procesando: %s", nodoProcesando);
-        DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_DORADO);
+        std::sprintf(etiqueta, "Procesando:");
+        std::sprintf(buffer, " %s", nodoProcesando);
+        int anchoPr = MeasureText(etiqueta, fuenteTam);
+        DrawText(etiqueta, (int)x, (int)y, fuenteTam, COLOR_TEXTO_OSCURO);
+        DrawText(buffer, (int)x + anchoPr, (int)y, fuenteTam, COLOR_DORADO);
         y += 24;
     }
 
@@ -134,12 +156,13 @@ void PanelInfo::dibujarColaVisual(const Cola& cola, Rectangle areaCola, const Gr
         DrawRectangle((int)barraX0, (int)barraY, (int)barraW, (int)barraH, color);
         DrawRectangleLines((int)barraX0, (int)barraY, (int)barraW, (int)barraH, COLOR_MARCO);
 
+        Color txtColor = (intensidad > 0.65f) ? BLACK : COLOR_TEXTO_NODO;
         if (nombre != nullptr) {
-            DrawText(nombre, (int)barraX0 + 8, (int)barraY + 3, 16, BLACK);
+            DrawText(nombre, (int)barraX0 + 8, (int)barraY + 3, 16, txtColor);
         } else {
             char texto[10];
             std::sprintf(texto, "%d", valor);
-            DrawText(texto, (int)barraX0 + 8, (int)barraY + 3, 16, BLACK);
+            DrawText(texto, (int)barraX0 + 8, (int)barraY + 3, 16, txtColor);
         }
 
         if (i == 0) {
@@ -196,12 +219,13 @@ void PanelInfo::dibujarPilaVisual(const Pila& pila, Rectangle areaPila, const Gr
         DrawRectangle((int)x, (int)yBloque, (int)barraW, (int)barraH, color);
         DrawRectangleLines((int)x, (int)yBloque, (int)barraW, (int)barraH, COLOR_MARCO);
 
+        Color txtColor = (intensidad > 0.65f) ? BLACK : COLOR_TEXTO_NODO;
         if (nombre != nullptr) {
-            DrawText(nombre, (int)x + 8, (int)yBloque + 3, 16, BLACK);
+            DrawText(nombre, (int)x + 8, (int)yBloque + 3, 16, txtColor);
         } else {
             char texto[10];
             std::sprintf(texto, "%d", valor);
-            DrawText(texto, (int)x + 8, (int)yBloque + 3, 16, BLACK);
+            DrawText(texto, (int)x + 8, (int)yBloque + 3, 16, txtColor);
         }
 
         if (i == 0) {

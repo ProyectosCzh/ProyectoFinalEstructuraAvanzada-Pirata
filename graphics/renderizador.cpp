@@ -8,6 +8,11 @@
 #define PI 3.14159265f
 #endif
 
+static Color colorTextoParaFondo(Color fondo) {
+    float lum = 0.299f * fondo.r + 0.587f * fondo.g + 0.114f * fondo.b;
+    return (lum > 140.0f) ? BLACK : COLOR_TEXTO_NODO;
+}
+
 Renderizador::Renderizador(Grafo* g, float ancho, float alto) {
     grafo = g;
     numNodos = g->getNumNodos();
@@ -217,8 +222,9 @@ void Renderizador::dibujarNombres() {
         int tx = (int)p.x - anchoTexto / 2;
         int ty = (int)p.y - tamFuente / 2;
 
+        Color colorTexto = colorTextoParaFondo(nodosVisuales[i].color);
         if (r >= tamFuente * 1.1f) {
-            DrawText(nombre, tx, ty, tamFuente, BLACK);
+            DrawText(nombre, tx, ty, tamFuente, colorTexto);
         } else {
             ty = (int)p.y + (int)r + 4;
             DrawRectangle(tx - 3, ty - 2, anchoTexto + 6, tamFuente + 4, COLOR_PANEL_INTERNO);
@@ -268,8 +274,8 @@ void Renderizador::dibujarTooltip(Vector2 mousePos, const Juego& juego) {
     char linea1[64];
     std::sprintf(linea1, "Ubicacion: %s", nombre);
 
-    int w = 260;
-    int h = pista ? 60 : 36;
+    int w = 300;
+    int h = pista ? 66 : 36;
     int tx = (int)mousePos.x + 18;
     int ty = (int)mousePos.y + 18;
     if (tx + w > (int)anchoPanel) tx = (int)mousePos.x - w - 10;
@@ -279,8 +285,8 @@ void Renderizador::dibujarTooltip(Vector2 mousePos, const Juego& juego) {
     DrawRectangleLinesEx({ (float)tx, (float)ty, (float)w, (float)h }, 1, COLOR_DORADO);
     DrawText(linea1, tx + 6, ty + 4, 14, COLOR_DORADO);
     if (pista != nullptr) {
-        DrawText(pista, tx + 6, ty + 24, 12, COLOR_TEXTO);
-        DrawText("[click para seleccionar]", tx + 6, ty + 42, 10, COLOR_TEXTO_OSCURO);
+        DrawText(pista, tx + 6, ty + 26, 13, COLOR_TEXTO);
+        DrawText("[click para seleccionar]", tx + 6, ty + 48, 11, COLOR_TEXTO_OSCURO);
     }
 }
 

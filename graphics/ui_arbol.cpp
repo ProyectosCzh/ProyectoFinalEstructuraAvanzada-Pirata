@@ -3,6 +3,10 @@
 #include <cstring>
 #include <cstdio>
 
+static const float RADIO_NODO = 15.0f;
+static const float ALTO_FILA  = 38.0f;
+static const float ESPACIO_HORIZONTAL = 8.0f;
+
 UIArbol::UIArbol(Arbol* a, Rectangle area) {
     arbol = a;
     this->area = area;
@@ -26,93 +30,114 @@ void UIArbol::dibujar() {
     NodoArbol* raiz = arbol->getRaiz();
     if (raiz->numHijos == 0) return;
 
-    float margenX = 14;
-    float margenY = 40;
-    float anchoDisp = area.width - margenX * 2;
-    float altoDisp = area.height - margenY - 44;
+    float margenX = 30;
+    float margenY = 34;
+    float anchoClip = area.width - margenX * 2;
+    float altoClip  = area.height - margenY - 44;
+
+    int maxNiveles = 0;
+    for (int i = 0; i < raiz->numHijos; i++) {
+        int n = contarNiveles(raiz->hijos[i]);
+        if (n > maxNiveles) maxNiveles = n;
+    }
+    float contenidoTotal = maxNiveles * ALTO_FILA;
+    float scrollMin = altoClip - contenidoTotal;
+    if (scrollMin > 0) scrollMin = 0;
+    if (scroll.y > 0) scroll.y = 0;
+    if (scroll.y < scrollMin) scroll.y = scrollMin;
 
     BeginScissorMode((int)(area.x + margenX), (int)(area.y + margenY),
-                     (int)anchoDisp, (int)altoDisp);
+                     (int)anchoClip, (int)altoClip);
 
-    int numHijosRaiz = raiz->numHijos;
-    for (int i = 0; i < numHijosRaiz; i++) {
-        int niveles = contarNiveles(raiz->hijos[i]);
-        float dx = anchoDisp * 0.5f;
-        float x = area.x + margenX + anchoDisp * 0.5f + scroll.x;
-        float y = area.y + margenY + 20 + scroll.y;
-        float dy = (altoDisp - 30) / (niveles > 1 ? niveles : 1);
+    float xBase = area.x + margenX + RADIO_NODO + 30;
 
-        dibujarNodo(raiz->hijos[i], x, y, dx, dy, 1);
+    for (int i = 0; i < raiz->numHijos; i++) {
+        float x = xBase + scroll.x;
+        float y = area.y + margenY + ALTO_FILA * 0.5f + scroll.y;
+        float dy = ALTO_FILA;
+
+        if (raiz->numHijos == 1) {
+            dibujarCadena(raiz->hijos[i], x, y, dy);
+        } else {
+            float xRama = x + i * (anchoClip - 30) / (raiz->numHijos - 1);
+            dibujarCadena(raiz->hijos[i], xRama, y, dy);
+        }
     }
 
     EndScissorMode();
 }
 
-void UIArbol::dibujarNodo(NodoArbol* nodo, float x, float y, float dx, float dy, int nivel) {
-    if (nodo == nullptr) return;
+void UIArbol::dibujarCadena(NodoArbol* nodo, float x, float y, float dy) {
+    int idx = 0;
+    NodoArbol* actual = nodo;
+    while (actual != nullptr) {
+        float cy = y + idx * dy;
+        float cx = x;
 
-    Color colorNodo = COLOR_ARBOL_LINEA;
-    Color colorTexto = COLOR_TEXTO;
-    bool activo = false;
+        bool activo = (pistaActiva != nullptr &&
+                       std::strcmp(actual->pista, pistaActiva) == 0);
 
-    if (pistaActiva != nullptr && std::strcmp(nodo->pista, pistaActiva) == 0) {
-        colorNodo = COLOR_ARBOL_ACTIVO;
-        colorTexto = BLACK;
-        activo = true;
-    }
+        Color colorNodo = activo ? COLOR_ARBOL_ACTIVO : COLOR_ARBOL_LINEA;
+        float radio = activo ? RADIO_NODO + 2.0f : RADIO_NODO;
 
-    float radio = activo ? 18.0f : 16.0f;
-
-    if (activo) {
-        DrawCircle((int)x, (int)y, radio + 4, ColorAlpha(COLOR_ARBOL_ACTIVO, 0.25f));
-    }
-
-    DrawCircle((int)x, (int)y, radio, colorNodo);
-    DrawCircleLines((int)x, (int)y, radio, COLOR_MARCO_BRILLO);
-
-    const char* texto = nodo->destino;
-    if (texto != nullptr) {
-        int tamF = (std::strlen(texto) > 8) ? 11 : 13;
-        int anchoTexto = MeasureText(texto, tamF);
-        DrawText(texto, (int)x - anchoTexto / 2, (int)y - tamF / 2, tamF, colorTexto);
-    }
-
-    if (nodo->numHijos > 0) {
-        const char* pistaTxt = nodo->pista;
-        if (pistaTxt != nullptr && pistaTxt[0] != '\0') {
-            char truncado[80];
-            int max = (int)std::strlen(pistaTxt);
-            if (max > 60) max = 60;
-            std::strncpy(truncado, pistaTxt, max);
-            truncado[max] = '\0';
-            int anchoP = MeasureText(truncado, 10);
-            int xp = (int)x - anchoP / 2;
-            int yp = (int)y + (int)radio + 3;
-            DrawRectangle(xp - 2, yp - 1, anchoP + 4, 13, COLOR_PANEL_INTERNO);
-            DrawText(truncado, xp, yp, 10, COLOR_TEXTO_OSCURO);
-        }
-    }
-
-    for (int i = 0; i < nodo->numHijos; i++) {
-        float hx, hy;
-        if (nodo->numHijos == 1) {
-            hx = x;
-            hy = y + dy;
-        } else {
-            hx = x - dx + 2 * dx * i / (nodo->numHijos - 1);
-            hy = y + dy;
-        }
-
-        Color colorLinea = COLOR_ARBOL_LINEA;
         if (activo) {
-            colorLinea = COLOR_ARBOL_ACTIVO;
+            DrawCircle((int)cx, (int)cy, radio + 5, ColorAlpha(COLOR_ARBOL_ACTIVO, 0.20f));
         }
 
-        DrawLineEx({ (float)x, (float)(y + radio + 2) },
-                   { (float)hx, (float)(hy - radio) },
-                   activo ? 2.5f : 1.5f, colorLinea);
+        DrawCircle((int)cx, (int)cy, radio, colorNodo);
+        DrawCircleLines((int)cx, (int)cy, radio, COLOR_MARCO_BRILLO);
 
-        dibujarNodo(nodo->hijos[i], hx, hy, dx / 2, dy, nivel + 1);
+        const char* destino = actual->destino;
+        if (destino != nullptr) {
+            int tamF = (std::strlen(destino) > 7) ? 10 : 12;
+            int anchoT = MeasureText(destino, tamF);
+            DrawText(destino, (int)cx - anchoT / 2, (int)cy - tamF / 2, tamF,
+                     activo ? BLACK : COLOR_TEXTO_NODO);
+        }
+
+        float iniLineaX = cx + radio + 3;
+        float finLineaX = cx + radio + ESPACIO_HORIZONTAL;
+        DrawLineEx({ iniLineaX, cy }, { finLineaX, cy }, 1.5f, COLOR_ARBOL_LINEA);
+
+        const char* pistaTxt = actual->pista;
+        if (pistaTxt != nullptr && pistaTxt[0] != '\0') {
+            float anchoPistaDisp = (area.x + area.width - 32) - finLineaX;
+            if (anchoPistaDisp > 20) {
+                int tamP = 11;
+                int anchoP = MeasureText(pistaTxt, tamP);
+                char buf[160];
+                std::strncpy(buf, pistaTxt, 159);
+                buf[159] = '\0';
+
+                if (anchoP > anchoPistaDisp) {
+                    int maxChars = (int)(anchoPistaDisp / (tamP * 0.55f)) - 2;
+                    if (maxChars < 3) maxChars = 3;
+                    if (maxChars > 159) maxChars = 159;
+                    buf[maxChars - 1] = '.';
+                    buf[maxChars - 2] = '.';
+                    buf[maxChars - 3] = '.';
+                    buf[maxChars] = '\0';
+                }
+
+                Color colorPista = activo ? COLOR_DORADO : COLOR_ARBOL_TEXTO_PISTA;
+                DrawText(buf, (int)finLineaX + 4, (int)cy - 6, tamP, colorPista);
+            }
+        }
+
+        if (actual->numHijos > 0) {
+            float sigCy = y + (idx + 1) * dy;
+            DrawLineEx({ cx, cy + radio + 2 },
+                       { cx, sigCy - radio - 2 },
+                       activo ? 2.5f : 1.5f,
+                       activo ? COLOR_ARBOL_ACTIVO : COLOR_ARBOL_LINEA);
+        }
+
+        if (actual->numHijos > 0) {
+            actual = actual->hijos[0];
+            idx++;
+        } else {
+            actual = nullptr;
+        }
     }
 }
 

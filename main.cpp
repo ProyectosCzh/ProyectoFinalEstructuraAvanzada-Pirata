@@ -120,7 +120,7 @@ int main() {
             if (sobreGrafo) {
                 renderizador.setZoom(renderizador.getZoom() + deltaWheel * 0.1f);
             } else if (sobreArbol) {
-                uiArbol.actualizarScroll({ 0, -deltaWheel * 30.0f });
+                uiArbol.actualizarScroll({ 0, deltaWheel * 30.0f });
             }
         }
 
@@ -339,10 +339,10 @@ int main() {
             DrawLine(0, y, ANCHO, y, c);
         }
 
-        const char* titulo = "EL TESORO DEL PIRATA";
-        int tw = MeasureText(titulo, 28);
-        DrawText(titulo, ANCHO/2 - tw/2 + 2, 10, 28, COLOR_TEXTO_SOMBRA);
-        DrawText(titulo, ANCHO/2 - tw/2, 8, 28, COLOR_DORADO);
+    const char* titulo = "EL TESORO DEL PIRATA";
+    int tw = MeasureText(titulo, 26);
+    DrawText(titulo, ANCHO/2 - tw/2 + 2, 8, 26, COLOR_TEXTO_SOMBRA);
+    DrawText(titulo, ANCHO/2 - tw/2, 6, 26, COLOR_DORADO);
 
         renderizador.dibujarConEstado(juego);
         renderizador.dibujarTooltip(mouse, juego);
@@ -381,24 +381,36 @@ int main() {
             dibujarBoton(botones[i], mouse);
         }
 
+        int sepIndices[4] = { 3, 6, 8, 13 };
+        float sepY1 = yBarraBotones + 4;
+        float sepY2 = yBarraBotones + altoBarraBotones - 4;
+        Color colSep = { 255, 200, 60, 55 };
+        for (int s = 0; s < 4; s++) {
+            int bi = sepIndices[s];
+            float sx = botones[bi].area.x + botones[bi].area.width + sep / 2;
+            DrawLineEx({ sx, sepY1 }, { sx, sepY2 }, 1.5f, colSep);
+        }
+
         animador.dibujarControles({ 0, yBarraAnimador, (float)ANCHO, altoBarraAnimador });
 
         float zoom = renderizador.getZoom();
         char zoomStr[32];
         std::sprintf(zoomStr, "Zoom: %.0f%%", zoom * 100.0f);
-        DrawText(zoomStr, ANCHO - 130, 12, 14, COLOR_TEXTO);
+    DrawText(zoomStr, ANCHO - 130, 34, 14, COLOR_TEXTO);
 
-        if (modoEdicion) {
-            const char* msjEd = ">> MODO EDICION - Arrastra nodos para reposicionarlos  [E] salir  [K] guardar <<";
-            int mwEd = MeasureText(msjEd, 14);
-            DrawText(msjEd, ANCHO/2 - mwEd/2, 46, 14, COLOR_NODO_EN_COLA);
-        }
+    int msgY = 44;
+    if (necesitaNodoSeleccion) {
+        const char* msj = ">> Haz CLICK en un nodo del mapa para empezar <<";
+        int mw = MeasureText(msj, 18);
+        DrawText(msj, ANCHO/2 - mw/2, msgY, 18, COLOR_DORADO);
+        msgY += 26;
+    }
 
-        if (necesitaNodoSeleccion) {
-            const char* msj = ">> Haz CLICK en un nodo del mapa para empezar <<";
-            int mw = MeasureText(msj, 18);
-            DrawText(msj, ANCHO/2 - mw/2, 46, 18, COLOR_DORADO);
-        }
+    if (modoEdicion) {
+        const char* msjEd = ">> MODO EDICION - Arrastra nodos para reposicionarlos  [E] salir  [K] guardar <<";
+        int mwEd = MeasureText(msjEd, 14);
+        DrawText(msjEd, ANCHO/2 - mwEd/2, msgY, 14, COLOR_NODO_EN_COLA);
+    }
 
         EndDrawing();
     }
