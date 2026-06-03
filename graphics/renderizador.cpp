@@ -94,10 +94,10 @@ void Renderizador::dibujarFondo() {
     float scaleY = altoPanel / (float)texturaFondo.height;
     float scale = fminf(scaleX, scaleY);
 
-    float destW = texturaFondo.width * scale;
-    float destH = texturaFondo.height * scale;
-    float ox = (anchoPanel - destW) * 0.5f;
-    float oy = (altoPanel - destH) * 0.5f;
+    float destW = texturaFondo.width * scale * zoom;
+    float destH = texturaFondo.height * scale * zoom;
+    float ox = (anchoPanel * 0.5f + offset.x) - destW * 0.5f;
+    float oy = (altoPanel * 0.5f + offset.y) - destH * 0.5f;
 
     DrawTexturePro(texturaFondo,
         { 0, 0, (float)texturaFondo.width, (float)texturaFondo.height },
