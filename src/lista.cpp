@@ -28,28 +28,6 @@ void Lista::insertar(int dato) {
     tam++;
 }
 
-void Lista::eliminar(int dato) {
-    NodoLista* actual = cabeza;
-    while (actual != nullptr) {
-        if (actual->dato == dato) {
-            if (actual->anterior != nullptr) {
-                actual->anterior->siguiente = actual->siguiente;
-            } else {
-                cabeza = actual->siguiente;
-            }
-            if (actual->siguiente != nullptr) {
-                actual->siguiente->anterior = actual->anterior;
-            } else {
-                cola = actual->anterior;
-            }
-            delete actual;
-            tam--;
-            return;
-        }
-        actual = actual->siguiente;
-    }
-}
-
 bool Lista::contiene(int dato) const {
     NodoLista* actual = cabeza;
     while (actual != nullptr) {
@@ -87,12 +65,4 @@ void Lista::vaciar() {
     cabeza = nullptr;
     cola = nullptr;
     tam = 0;
-}
-
-NodoLista* Lista::getCabeza() const {
-    return cabeza;
-}
-
-NodoLista* Lista::getCola() const {
-    return cola;
 }

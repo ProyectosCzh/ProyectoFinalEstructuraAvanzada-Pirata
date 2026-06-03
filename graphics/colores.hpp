@@ -23,7 +23,6 @@ const Color COLOR_TEXTO_SOMBRA    = { 10,  10,  20, 200};
 const Color COLOR_ARISTA          = { 90, 110, 140, 255};
 const Color COLOR_ARISTA_RUTA     = {255, 100, 100, 255};
 const Color COLOR_TESORO          = {255, 215,   0, 255};
-const Color COLOR_TESORO_BRILLO   = {255, 240, 120, 255};
 
 const Color COLOR_DORADO          = {255, 200,  60, 255};
 const Color COLOR_MARCO           = {120,  90,  40, 255};

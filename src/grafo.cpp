@@ -76,17 +76,3 @@ Arista* Grafo::getAristas(int nodo) const {
 int Grafo::getNumNodos() const {
     return numNodos;
 }
-
-void Grafo::limpiar() {
-    for (int i = 0; i < numNodos; i++) {
-        Arista* actual = nodos[i].aristas;
-        while (actual != nullptr) {
-            Arista* siguiente = actual->siguiente;
-            delete actual;
-            actual = siguiente;
-        }
-        nodos[i].aristas = nullptr;
-        nodos[i].nombre[0] = '\0';
-    }
-    numNodos = 0;
-}

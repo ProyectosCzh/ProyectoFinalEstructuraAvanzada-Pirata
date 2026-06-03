@@ -4,7 +4,6 @@
 
 Animador::Animador() {
     reproduciendo = false;
-    pasoAPaso = false;
     velocidad = 500;
     tiempoUltimoPaso = 0;
     pasoActual = 0;
@@ -13,7 +12,6 @@ Animador::Animador() {
 
 void Animador::iniciar(int totalPasos) {
     reproduciendo = true;
-    pasoAPaso = false;
     pasoActual = 0;
     pasosTotales = totalPasos;
     tiempoUltimoPaso = GetTime();
@@ -26,27 +24,6 @@ void Animador::pausar() {
 void Animador::reanudar() {
     reproduciendo = true;
     tiempoUltimoPaso = GetTime();
-}
-
-void Animador::togglePasoAPaso() {
-    pasoAPaso = !pasoAPaso;
-    if (pasoAPaso) {
-        reproduciendo = false;
-    }
-}
-
-bool Animador::siguientePaso() {
-    if (pasoActual < pasosTotales) {
-        pasoActual++;
-        return true;
-    }
-    return false;
-}
-
-void Animador::setVelocidad(int ms) {
-    if (ms >= 50 && ms <= 3000) {
-        velocidad = ms;
-    }
 }
 
 void Animador::setVelocidadRelativa(int delta) {

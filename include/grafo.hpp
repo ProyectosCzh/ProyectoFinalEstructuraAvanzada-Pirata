@@ -28,8 +28,6 @@ public:
     const char* getNombreNodo(int indice) const;
     Arista* getAristas(int nodo) const;
     int getNumNodos() const;
-    void limpiar();
-
     void setDirigido(bool d) { dirigido = d; }
     bool esDirigido() const { return dirigido; }
 };

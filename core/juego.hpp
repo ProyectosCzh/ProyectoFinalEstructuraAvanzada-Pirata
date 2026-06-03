@@ -15,9 +15,7 @@ enum EstadoJuego {
     EXPLORANDO_DFS,
     EXPLORANDO_DIJKSTRA,
     NAVEGANDO_PISTAS,
-    RUTA_OPTIMA,
-    COMPLETADO,
-    PAUSADO
+    COMPLETADO
 };
 
 class Juego {
@@ -54,6 +52,7 @@ private:
     int dijkTamCola;
     int dijkUActual;
     int dijkPasoActual;
+    int dijkVisitCount;
 
     int nodoProcesandoIdx;
     char nodoProcesandoNombre[64];
@@ -61,6 +60,10 @@ private:
     char pistaActiva[200];
     int nodoPistaActual;
     int nodoPistaSiguiente;
+
+private:
+    void iniciarAlgoritmo(EstadoJuego nuevoEstado, const char* algoNombre);
+    void finalizarExploracion(const char* algoNombre);
 
 public:
     Juego();
@@ -78,18 +81,13 @@ public:
 
     EstadoJuego getEstado() const { return estado; }
     int getNodoSeleccionado() const { return nodoSeleccionado; }
-    int getNodoInicio() const { return nodoInicio; }
-    int getNodoTesoro() const { return nodoTesoro; }
     int getCostoTotal() const { return costoTotal; }
     int getNumVisitados() const { return numVisitados; }
     int getPasoActual() const { return pasoActual; }
-    const char* getAlgoritmoUsado() const { return algoritmoUsado; }
     const char* getPistaNodo(int indice) const;
     const char* getNodoProcesando() const { return nodoProcesandoNombre; }
     int getNodoProcesandoIdx() const { return nodoProcesandoIdx; }
     const char* getPistaActiva() const { return pistaActiva; }
-    int getNodoPistaActual() const { return nodoPistaActual; }
-    int getNodoPistaSiguiente() const { return nodoPistaSiguiente; }
     bool getVisitado(int indice) const { return visitadosAnim[indice]; }
     bool getEnCola(int indice) const { return enColaAnim[indice]; }
     bool getEnRuta(int indice) const;

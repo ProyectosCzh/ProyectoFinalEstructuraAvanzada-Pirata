@@ -42,19 +42,18 @@ void UIArbol::dibujar() {
         float y = area.y + margenY + 20 + scroll.y;
         float dy = (altoDisp - 30) / (niveles > 1 ? niveles : 1);
 
-        dibujarNodo(raiz->hijos[i], x, y, dx, dy, 1, niveles);
+        dibujarNodo(raiz->hijos[i], x, y, dx, dy, 1);
     }
 
     EndScissorMode();
 }
 
-void UIArbol::dibujarNodo(NodoArbol* nodo, float x, float y, float dx, float dy, int nivel, int maxNivel) {
+void UIArbol::dibujarNodo(NodoArbol* nodo, float x, float y, float dx, float dy, int nivel) {
     if (nodo == nullptr) return;
 
     Color colorNodo = COLOR_ARBOL_LINEA;
     Color colorTexto = COLOR_TEXTO;
     bool activo = false;
-    bool enCamino = false;
 
     if (pistaActiva != nullptr && std::strcmp(nodo->pista, pistaActiva) == 0) {
         colorNodo = COLOR_ARBOL_ACTIVO;
@@ -113,7 +112,7 @@ void UIArbol::dibujarNodo(NodoArbol* nodo, float x, float y, float dx, float dy,
                    { (float)hx, (float)(hy - radio) },
                    activo ? 2.5f : 1.5f, colorLinea);
 
-        dibujarNodo(nodo->hijos[i], hx, hy, dx / 2, dy, nivel + 1, maxNivel);
+        dibujarNodo(nodo->hijos[i], hx, hy, dx / 2, dy, nivel + 1);
     }
 }
 

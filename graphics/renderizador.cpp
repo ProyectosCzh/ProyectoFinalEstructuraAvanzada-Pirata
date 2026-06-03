@@ -26,10 +26,6 @@ Renderizador::~Renderizador() {
     delete[] nodosVisuales;
 }
 
-void Renderizador::calcularLayout() {
-    calcularLayoutRejilla();
-}
-
 void Renderizador::calcularLayoutRejilla() {
     if (numNodos == 0) return;
 
@@ -55,7 +51,6 @@ void Renderizador::calcularLayoutRejilla() {
         nodosVisuales[i].posicion.y = marginY + cellH * (fila + 0.5f);
         nodosVisuales[i].radio = radio;
         nodosVisuales[i].seleccionado = false;
-        nodosVisuales[i].pulse = 0.0f;
     }
 }
 
@@ -181,9 +176,6 @@ void Renderizador::dibujarNombres() {
     }
 }
 
-void Renderizador::dibujarPesos() {
-}
-
 void Renderizador::dibujarLeyenda() {
     float x = 10;
     float y = 10;
@@ -245,15 +237,6 @@ void Renderizador::actualizarInput(Vector2 mousePos) {
     nodoHover = nodoBajoMouse(mousePos);
 }
 
-void Renderizador::dibujar() {
-    Lista* rutaPtr = nullptr;
-    bool dirFlag = grafo->esDirigido();
-    dibujarAristas(rutaPtr, dirFlag);
-    dibujarNodos();
-    dibujarNombres();
-    dibujarLeyenda();
-}
-
 void Renderizador::dibujarConEstado(Juego& juego) {
     sincronizarConJuego(juego);
     const Lista& ruta = juego.getRutaOptima();
@@ -299,12 +282,6 @@ int Renderizador::nodoBajoMouse(Vector2 mousePos) const {
     return -1;
 }
 
-void Renderizador::setColorNodo(int indice, Color color) {
-    if (indice >= 0 && indice < numNodos) {
-        nodosVisuales[indice].color = color;
-    }
-}
-
 void Renderizador::setSeleccionado(int indice, bool sel) {
     if (indice >= 0 && indice < numNodos) {
         nodosVisuales[indice].seleccionado = sel;
@@ -314,7 +291,6 @@ void Renderizador::setSeleccionado(int indice, bool sel) {
 void Renderizador::resetearColores() {
     for (int i = 0; i < numNodos; i++) {
         nodosVisuales[i].seleccionado = false;
-        nodosVisuales[i].pulse = 0.0f;
         const char* nombre = grafo->getNombreNodo(i);
         if (nombre != nullptr && std::strcmp(nombre, "tesoro") == 0) {
             nodosVisuales[i].color = COLOR_TESORO;

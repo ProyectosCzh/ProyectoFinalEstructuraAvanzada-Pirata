@@ -178,7 +178,7 @@ int main() {
                                 else animador.reanudar();
                                 break;
                             case 5:
-                                juego.pasoAnimacion();
+                                if (!animador.estaReproduciendo()) juego.pasoAnimacion();
                                 break;
                             case 6:
                                 animador.iniciar(juego.getGrafo().getNumNodos() * 3);
@@ -253,7 +253,7 @@ int main() {
                 animador.iniciar(juego.getGrafo().getNumNodos());
             }
         }
-        if (IsKeyPressed(KEY_N)) juego.pasoAnimacion();
+        if (IsKeyPressed(KEY_N) && !animador.estaReproduciendo()) juego.pasoAnimacion();
         if (IsKeyPressed(KEY_P)) {
             if (animador.estaReproduciendo()) animador.pausar();
             else animador.reanudar();
@@ -290,9 +290,10 @@ int main() {
         if (necesitaNodoSeleccion) {
             for (int i = 0; i <= 3; i++) botones[i].habilitado = false;
         }
-        if (!hayAlgoritmoCorriendo && juego.getEstado() != PAUSADO) {
+        if (!hayAlgoritmoCorriendo) {
             botones[4].habilitado = false;
             botones[5].habilitado = false;
+            botones[6].habilitado = false;
         }
 
         renderizador.actualizarInput(mouse);
@@ -340,9 +341,7 @@ int main() {
             case EXPLORANDO_DFS:       estadoStr = "EXPLORANDO (DFS)"; break;
             case EXPLORANDO_DIJKSTRA:  estadoStr = "EXPLORANDO (DIJKSTRA)"; break;
             case NAVEGANDO_PISTAS:     estadoStr = "NAVEGANDO POR PISTAS"; break;
-            case RUTA_OPTIMA:          estadoStr = "RUTA OPTIMA"; break;
-            case COMPLETADO:           estadoStr = "COMPLETADO"; break;
-            case PAUSADO:              estadoStr = "PAUSADO"; break;
+            case COMPLETADO:           estadoStr = "COMPLETADO (Ruta optima encontrada)"; break;
         }
 
         panelInfo.dibujar("BITACORA DE EXPLORACION", pista, nombreNodo,
