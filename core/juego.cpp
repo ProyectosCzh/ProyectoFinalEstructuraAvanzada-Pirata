@@ -24,6 +24,10 @@ Juego::Juego()
     nodoPistaActual = -1;
     nodoPistaSiguiente = -1;
     algoritmoUsado[0] = '\0';
+    for (int i = 0; i < 100; i++) {
+        visitadosAnim[i] = false;
+        enColaAnim[i] = false;
+    }
 }
 
 Juego::~Juego() {
@@ -84,6 +88,7 @@ void Juego::iniciarBFS() {
     int n = grafo.getNumNodos();
     for (int i = 0; i < n; i++) {
         visitadosAnim[i] = false;
+        enColaAnim[i] = false;
         padres[i] = -1;
     }
 
@@ -112,6 +117,7 @@ void Juego::iniciarDFS() {
     int n = grafo.getNumNodos();
     for (int i = 0; i < n; i++) {
         visitadosAnim[i] = false;
+        enColaAnim[i] = false;
         padres[i] = -1;
         expandidos[i] = false;
     }
@@ -143,6 +149,7 @@ void Juego::iniciarDijkstra() {
     int n = grafo.getNumNodos();
     for (int i = 0; i < n; i++) {
         visitadosAnim[i] = false;
+        enColaAnim[i] = false;
         padres[i] = -1;
         distanciasAnim[i] = 999999;
     }
@@ -204,8 +211,19 @@ void Juego::pasoAnimacion() {
                                               pasoActual);
         pasoActual++;
 
-        if (tamFrente > 0 && frenteActual < tamFrente) {
-            int proc = colaLocal[frenteActual - (encontrado ? 1 : 0)];
+        int n = grafo.getNumNodos();
+        for (int i = 0; i < n; i++) enColaAnim[i] = false;
+        for (int i = frenteActual; i < tamFrente; i++) {
+            int v = colaLocal[i];
+            if (v >= 0 && v < n) enColaAnim[v] = true;
+        }
+        for (int i = 0; i < colaAnimacion.obtenerTam(); i++) {
+            int v = colaAnimacion.getDatoEn(i);
+            if (v >= 0 && v < n) enColaAnim[v] = true;
+        }
+
+        if (tamFrente > 0 && frenteActual > 0) {
+            int proc = colaLocal[frenteActual - 1];
             if (proc >= 0 && proc < grafo.getNumNodos()) {
                 nodoProcesandoIdx = proc;
                 const char* nom = grafo.getNombreNodo(proc);
@@ -216,6 +234,14 @@ void Juego::pasoAnimacion() {
                     std::strncpy(pistaActiva, p, 199);
                     pistaActiva[199] = '\0';
                 }
+            }
+        } else if (tamFrente == 1 && frenteActual == 0) {
+            int proc = colaLocal[0];
+            if (proc >= 0 && proc < grafo.getNumNodos()) {
+                nodoProcesandoIdx = proc;
+                const char* nom = grafo.getNombreNodo(proc);
+                std::strncpy(nodoProcesandoNombre, nom ? nom : "?", 63);
+                nodoProcesandoNombre[63] = '\0';
             }
         }
 
@@ -238,6 +264,7 @@ void Juego::pasoAnimacion() {
             estado = COMPLETADO;
             numVisitados = rutaOptima.longitud();
             nodoProcesandoIdx = -1;
+            for (int i = 0; i < n; i++) enColaAnim[i] = false;
             printf("BFS: Tesoro encontrado! Costo: %d\n", costoTotal);
         }
     } else if (estado == EXPLORANDO_DFS) {
@@ -247,7 +274,21 @@ void Juego::pasoAnimacion() {
                                               pasoActual);
         pasoActual++;
 
-        if (topeLocal >= 0 && pilaLocal != nullptr) {
+        int n = grafo.getNumNodos();
+        for (int i = 0; i < n; i++) enColaAnim[i] = false;
+        for (int i = 0; i <= topeLocal; i++) {
+            int v = pilaLocal[i];
+            if (v >= 0 && v < n) enColaAnim[v] = true;
+        }
+        for (int i = 0; i < pilaAnimacion.obtenerTam(); i++) {
+            int* datos = pilaAnimacion.getDatos();
+            if (datos != nullptr) {
+                int v = datos[i];
+                if (v >= 0 && v < n) enColaAnim[v] = true;
+            }
+        }
+
+        if (topeLocal >= 0) {
             int proc = pilaLocal[topeLocal];
             if (proc >= 0 && proc < grafo.getNumNodos()) {
                 nodoProcesandoIdx = proc;
@@ -283,6 +324,7 @@ void Juego::pasoAnimacion() {
             estado = COMPLETADO;
             numVisitados = rutaOptima.longitud();
             nodoProcesandoIdx = -1;
+            for (int i = 0; i < n; i++) enColaAnim[i] = false;
             printf("DFS: Tesoro encontrado! Costo: %d\n", costoTotal);
         }
     } else if (estado == EXPLORANDO_DIJKSTRA) {
@@ -292,6 +334,13 @@ void Juego::pasoAnimacion() {
                                                    dijkUActual, dijkColaLocal, dijkTamCola);
         pasoActual++;
         numVisitados = dijkTamCola;
+
+        int n = grafo.getNumNodos();
+        for (int i = 0; i < n; i++) enColaAnim[i] = false;
+        for (int i = 0; i < dijkTamCola; i++) {
+            int v = dijkColaLocal[i];
+            if (v >= 0 && v < n) enColaAnim[v] = true;
+        }
 
         if (dijkUActual >= 0 && dijkUActual < grafo.getNumNodos()) {
             nodoProcesandoIdx = dijkUActual;
@@ -312,6 +361,7 @@ void Juego::pasoAnimacion() {
             }
             estado = COMPLETADO;
             nodoProcesandoIdx = -1;
+            for (int i = 0; i < n; i++) enColaAnim[i] = false;
             printf("Dijkstra: Tesoro encontrado! Costo: %d\n", costoTotal);
         }
     } else if (estado == NAVEGANDO_PISTAS) {
@@ -375,6 +425,7 @@ void Juego::limpiar() {
     int n = grafo.getNumNodos();
     for (int i = 0; i < n; i++) {
         visitadosAnim[i] = false;
+        enColaAnim[i] = false;
     }
 }
 

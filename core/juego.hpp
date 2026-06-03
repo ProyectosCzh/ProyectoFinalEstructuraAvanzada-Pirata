@@ -40,6 +40,7 @@ private:
 
     int padres[100];
     bool visitadosAnim[100];
+    bool enColaAnim[100];
     int distanciasAnim[100];
     int colaLocal[100];
     int pilaLocal[100];
@@ -89,6 +90,7 @@ public:
     int getNodoPistaActual() const { return nodoPistaActual; }
     int getNodoPistaSiguiente() const { return nodoPistaSiguiente; }
     bool getVisitado(int indice) const { return visitadosAnim[indice]; }
+    bool getEnCola(int indice) const { return enColaAnim[indice]; }
     bool getEnRuta(int indice) const;
 
     Grafo& getGrafo() { return grafo; }

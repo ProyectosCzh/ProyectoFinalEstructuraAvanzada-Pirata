@@ -1,7 +1,17 @@
-playa:Sigue el sonido del agua
-montana:Busca donde el sol no llega
-cueva:El eco te guiara al este
-bosque:Las flores senalan el camino
-laguna:Reflejo de la luna te mostrara el camino
-templo:Detras del altar yace la respuesta
-tesoro:!Lo has encontrado!
+# RUTA DE PISTAS: playa → pueblo_pirata → r_caleta → p_bosque → bosque → rio → cascada → valle → ruinas → laguna → templo → atalaya → fortin → mercado → ermita → tesoro
+playa:Los pescadores del pueblo saben algo:pueblo_pirata
+pueblo_pirata:El humo en la caleta escondida senala el camino:r_caleta
+r_caleta:Las huellas en el barro llevan al bosque espeso:p_bosque
+p_bosque:Los arboles mas viejos guardan el secreto:bosque
+bosque:Sigue el murmullo del agua corriente:rio
+rio:Remonta la corriente hasta que el agua caiga del cielo:cascada
+cascada:El velo de agua oculta un pasaje:valle
+valle:Entre las colinas verdes yacen piedras antiguas:ruinas
+ruinas:El reflejo en el ojo de la estatua apunta a la laguna:laguna
+laguna:El templo emerge entre la niebla matutina:templo
+templo:Desde la torre mas alta se divisa una luz:atalaya
+atalaya:La fortaleza junto al acantilado resguarda un secreto:fortin
+fortin:El cofre del capitan esta vacio, la llave esta en el mercado:mercado
+mercado:El ermitano del cerro conoce el ultimo paso:ermita
+ermita:El tesoro brilla bajo la luz del sol poniente:tesoro
+tesoro:!Lo has encontrado!:tesoro

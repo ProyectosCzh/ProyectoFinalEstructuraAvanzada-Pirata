@@ -256,11 +256,15 @@ void Renderizador::dibujar() {
 
 void Renderizador::dibujarConEstado(Juego& juego) {
     sincronizarConJuego(juego);
-    dibujar();
+    const Lista& ruta = juego.getRutaOptima();
+    bool dirFlag = grafo->esDirigido();
+    dibujarAristas(&ruta, dirFlag);
+    dibujarNodos();
+    dibujarNombres();
+    dibujarLeyenda();
 }
 
 void Renderizador::sincronizarConJuego(Juego& juego) {
-    int procIdx = juego.getNodoProcesando() ? -1 : -1;
     for (int i = 0; i < numNodos; i++) {
         if (juego.getNodoSeleccionado() == i) {
             nodosVisuales[i].color = COLOR_NODO_SELECCION;
@@ -273,6 +277,8 @@ void Renderizador::sincronizarConJuego(Juego& juego) {
             } else {
                 nodosVisuales[i].color = COLOR_NODO_VISITADO;
             }
+        } else if (juego.getEnCola(i)) {
+            nodosVisuales[i].color = COLOR_NODO_EN_COLA;
         } else {
             nodosVisuales[i].color = COLOR_NODO_NO_VIS;
         }
@@ -280,11 +286,11 @@ void Renderizador::sincronizarConJuego(Juego& juego) {
 }
 
 int Renderizador::nodoBajoMouse(Vector2 mousePos) const {
+    Vector2 pWorld = mousePos;
+    deshacerTransform(pWorld);
     for (int i = 0; i < numNodos; i++) {
-        Vector2 p = nodosVisuales[i].posicion;
-        deshacerTransform(p);
-        float dx = mousePos.x - p.x;
-        float dy = mousePos.y - p.y;
+        float dx = pWorld.x - nodosVisuales[i].posicion.x;
+        float dy = pWorld.y - nodosVisuales[i].posicion.y;
         float dist = std::sqrt(dx * dx + dy * dy);
         if (dist <= nodosVisuales[i].radio * zoom + 4.0f) {
             return i;

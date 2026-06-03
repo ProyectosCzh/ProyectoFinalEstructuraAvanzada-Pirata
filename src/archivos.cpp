@@ -113,7 +113,7 @@ bool cargarArbolPistas(const char* ruta, Arbol& arbol) {
     }
 
     char linea[512];
-    bool primera = true;
+    int numEntradas = 0;
 
     while (std::fgets(linea, sizeof(linea), archivo) != nullptr) {
         if (linea[0] == '\n' || linea[0] == '\0' || linea[0] == '#') {
@@ -128,26 +128,21 @@ bool cargarArbolPistas(const char* ruta, Arbol& arbol) {
         char* clave = std::strtok(linea, ":");
         if (clave == nullptr) continue;
 
-        char* valor = std::strtok(nullptr, ":");
-        if (valor == nullptr) continue;
+        char* pista = std::strtok(nullptr, ":");
+        if (pista == nullptr) continue;
 
-        if (primera) {
+        char* destino = std::strtok(nullptr, ":");
+        if (destino == nullptr) destino = clave;
+
+        if (numEntradas == 0) {
             arbol.crearRaiz("inicio", clave);
-            arbol.agregarHijo(arbol.getRaiz(), valor, clave);
-            primera = false;
-        } else {
-            NodoArbol* nodoRaiz = arbol.getRaiz();
-            for (int i = 0; i < nodoRaiz->numHijos; i++) {
-                if (std::strcmp(nodoRaiz->hijos[i]->destino, clave) == 0) {
-                    arbol.agregarHijo(nodoRaiz->hijos[i], valor, clave);
-                    break;
-                }
-            }
         }
+        arbol.agregarHijo(arbol.getRaiz(), pista, destino);
+        numEntradas++;
     }
 
     std::fclose(archivo);
-    printf("Arbol de pistas cargado desde %s\n", ruta);
+    printf("Arbol de pistas cargado: %d entradas desde %s\n", numEntradas, ruta);
     return true;
 }
 
