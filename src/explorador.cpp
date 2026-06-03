@@ -294,6 +294,69 @@ int Explorador::dijkstra(int nodoInicio, int nodoDestino, int* padres, int* dist
     return costo;
 }
 
+bool Explorador::dijkstraPaso(int nodoInicio, int nodoDestino, int* padres, int* distancias,
+                              bool* visitados, int& pasoActual, int& uActual,
+                              int* colaLocal, int& tamCola) {
+    if (grafo == nullptr) return false;
+    int n = grafo->getNumNodos();
+
+    if (pasoActual == 0) {
+        for (int i = 0; i < n; i++) {
+            distancias[i] = 999999;
+            padres[i] = -1;
+            visitados[i] = false;
+        }
+        distancias[nodoInicio] = 0;
+        colaLocal[0] = nodoInicio;
+        tamCola = 1;
+        uActual = -1;
+        pasoActual = 1;
+        return false;
+    }
+
+    int minDist = 999999;
+    int u = -1;
+    for (int i = 0; i < tamCola; i++) {
+        int candidato = colaLocal[i];
+        if (!visitados[candidato] && distancias[candidato] < minDist) {
+            minDist = distancias[candidato];
+            u = candidato;
+        }
+    }
+
+    if (u == -1) return true;
+
+    uActual = u;
+    visitados[u] = true;
+
+    if (u == nodoDestino) {
+        return true;
+    }
+
+    Arista* arista = grafo->getAristas(u);
+    while (arista != nullptr) {
+        int v = arista->destino;
+        int peso = arista->peso;
+        if (!visitados[v]) {
+            if (distancias[u] + peso < distancias[v]) {
+                distancias[v] = distancias[u] + peso;
+                padres[v] = u;
+            }
+            bool yaEnCola = false;
+            for (int i = 0; i < tamCola; i++) {
+                if (colaLocal[i] == v) { yaEnCola = true; break; }
+            }
+            if (!yaEnCola) {
+                colaLocal[tamCola] = v;
+                tamCola++;
+            }
+        }
+        arista = arista->siguiente;
+    }
+
+    return false;
+}
+
 int Explorador::navegarPorPistas(int nodoInicio, int* caminoPistas, int& numPasos) {
     if (grafo == nullptr || pistas == nullptr || arbolPistas == nullptr) return -1;
 

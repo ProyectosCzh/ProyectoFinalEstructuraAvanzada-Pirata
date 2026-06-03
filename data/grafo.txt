@@ -1,3 +1,4 @@
+dirigido: false
 nodos: playa,montana,cueva,bosque,laguna,templo,tesoro
 playa:montana(3),cueva(5)
 montana:cueva(2),bosque(4)

@@ -13,6 +13,8 @@ enum EstadoJuego {
     INICIO,
     EXPLORANDO_BFS,
     EXPLORANDO_DFS,
+    EXPLORANDO_DIJKSTRA,
+    NAVEGANDO_PISTAS,
     RUTA_OPTIMA,
     COMPLETADO,
     PAUSADO
@@ -47,7 +49,17 @@ private:
     int topeLocal;
     int pasoActual;
 
-    bool bfsEncontrado;
+    int dijkColaLocal[100];
+    int dijkTamCola;
+    int dijkUActual;
+    int dijkPasoActual;
+
+    int nodoProcesandoIdx;
+    char nodoProcesandoNombre[64];
+
+    char pistaActiva[200];
+    int nodoPistaActual;
+    int nodoPistaSiguiente;
 
 public:
     Juego();
@@ -58,7 +70,7 @@ public:
     void iniciarBFS();
     void iniciarDFS();
     void iniciarDijkstra();
-    void navegarPorPistas();
+    void iniciarNavegacionPistas();
     void pasoAnimacion();
     void limpiar();
     bool guardarResultado();
@@ -66,11 +78,16 @@ public:
     EstadoJuego getEstado() const { return estado; }
     int getNodoSeleccionado() const { return nodoSeleccionado; }
     int getNodoInicio() const { return nodoInicio; }
+    int getNodoTesoro() const { return nodoTesoro; }
     int getCostoTotal() const { return costoTotal; }
     int getNumVisitados() const { return numVisitados; }
     int getPasoActual() const { return pasoActual; }
     const char* getAlgoritmoUsado() const { return algoritmoUsado; }
     const char* getPistaNodo(int indice) const;
+    const char* getNodoProcesando() const { return nodoProcesandoNombre; }
+    const char* getPistaActiva() const { return pistaActiva; }
+    int getNodoPistaActual() const { return nodoPistaActual; }
+    int getNodoPistaSiguiente() const { return nodoPistaSiguiente; }
     bool getVisitado(int indice) const { return visitadosAnim[indice]; }
     bool getEnRuta(int indice) const;
 

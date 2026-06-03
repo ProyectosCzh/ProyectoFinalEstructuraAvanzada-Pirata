@@ -1,11 +1,12 @@
 #include "panel_info.hpp"
 #include "colores.hpp"
+#include "../include/grafo.hpp"
 #include <cstdio>
 #include <cstring>
 
 PanelInfo::PanelInfo(Rectangle area) {
     this->area = area;
-    this->fuenteTam = 14;
+    this->fuenteTam = 18;
 }
 
 void PanelInfo::dibujar(const char* titulo, const char* pistaActual,
@@ -14,132 +15,209 @@ void PanelInfo::dibujar(const char* titulo, const char* pistaActual,
                          int pasoActual,
                          const Lista& ruta,
                          const Cola& cola,
-                         const Pila& pila) {
+                         const Pila& pila,
+                         const Grafo* grafo,
+                         const char* nodoProcesando) {
     DrawRectangleRec(area, COLOR_PANEL_FONDO);
-    DrawRectangleLinesEx(area, 2, DARKGRAY);
+    DrawRectangleLinesEx(area, 2, COLOR_MARCO);
 
-    float y = area.y + 5;
-    float x = area.x + 5;
-    float ancho = area.width - 10;
+    float y = area.y + 8;
+    float x = area.x + 8;
+    float ancho = area.width - 16;
 
-    DrawText(titulo, (int)x, (int)y, 18, YELLOW);
-    y += 25;
+    DrawText(titulo, (int)x, (int)y, 22, COLOR_DORADO);
+    y += 32;
 
     char buffer[256];
 
     if (nodoNombre != nullptr) {
         std::sprintf(buffer, "Nodo: %s", nodoNombre);
         DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
-        y += 20;
+        y += 24;
     }
 
     if (pistaActual != nullptr) {
         std::sprintf(buffer, "Pista: %s", pistaActual);
         DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
-        y += 20;
+        y += 24;
     }
 
     std::sprintf(buffer, "Costo: %d", costo);
     DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
-    y += 20;
+    y += 24;
 
     if (estadoStr != nullptr) {
         std::sprintf(buffer, "Estado: %s", estadoStr);
         DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
-        y += 20;
+        y += 24;
     }
 
     std::sprintf(buffer, "Visitados: %d", visitados);
     DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
-    y += 20;
+    y += 24;
 
     std::sprintf(buffer, "Paso: %d", pasoActual);
     DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_TEXTO);
-    y += 25;
+    y += 24;
+
+    if (nodoProcesando != nullptr) {
+        std::sprintf(buffer, "Procesando: %s", nodoProcesando);
+        DrawText(buffer, (int)x, (int)y, fuenteTam, COLOR_DORADO);
+        y += 24;
+    }
 
     if (ruta.longitud() > 0) {
-        DrawText("Ruta:", (int)x, (int)y, fuenteTam, YELLOW);
-        y += 18;
+        DrawText("Ruta:", (int)x, (int)y, fuenteTam, COLOR_DORADO);
+        y += 22;
 
         char rutaStr[512] = "";
         for (int i = 0; i < ruta.longitud(); i++) {
-            char num[10];
-            std::sprintf(num, "%d", ruta.obtener(i));
-            std::strcat(rutaStr, num);
+            int idx = ruta.obtener(i);
+            const char* nombre = (grafo != nullptr) ? grafo->getNombreNodo(idx) : nullptr;
+            if (nombre == nullptr) {
+                char num[10];
+                std::sprintf(num, "%d", idx);
+                std::strcat(rutaStr, num);
+            } else {
+                std::strcat(rutaStr, nombre);
+            }
             if (i < ruta.longitud() - 1) {
                 std::strcat(rutaStr, " -> ");
             }
         }
-        DrawText(rutaStr, (int)x, (int)y, 12, COLOR_TEXTO_OSCURO);
+        DrawText(rutaStr, (int)x, (int)y, 16, COLOR_TEXTO);
     }
 
-    float panelMedio = area.height * 0.55f;
-    float margen = 5.0f;
+    float panelMedio = area.height * 0.50f;
+    float margen = 6.0f;
     float anchoCola = (ancho - margen) / 2.0f;
     float altoCola = area.height - panelMedio - margen * 2;
 
     Rectangle areaCola = { x, area.y + panelMedio, anchoCola, altoCola };
     Rectangle areaPila = { x + anchoCola + margen, area.y + panelMedio, anchoCola, altoCola };
 
-    dibujarColaVisual(cola, areaCola);
-    dibujarPilaVisual(pila, areaPila);
+    dibujarColaVisual(cola, areaCola, grafo);
+    dibujarPilaVisual(pila, areaPila, grafo);
 }
 
-void PanelInfo::dibujarColaVisual(const Cola& cola, Rectangle areaCola) {
-    DrawRectangleLinesEx(areaCola, 1, DARKGRAY);
-    DrawText("COLA (BFS)", (int)areaCola.x + 5, (int)areaCola.y + 2, 12, YELLOW);
+void PanelInfo::dibujarColaVisual(const Cola& cola, Rectangle areaCola, const Grafo* grafo) {
+    DrawRectangleRec(areaCola, COLOR_PANEL_INTERNO);
+    DrawRectangleLinesEx(areaCola, 1, COLOR_MARCO);
+    DrawText("COLA (BFS)", (int)areaCola.x + 5, (int)areaCola.y + 3, 14, COLOR_DORADO);
 
     int tamCola = cola.obtenerTam();
-    float barraAncho = areaCola.width - 10;
-    float barraAlto = 18;
-    float y = areaCola.y + 20;
+    float barraX0 = areaCola.x + 10;
+    float barraY  = areaCola.y + 26;
+    float barraW  = areaCola.width - 60;
+    float barraH  = 22;
+    float sep     = 4;
 
-    for (int i = 0; i < tamCola && i < 8; i++) {
+    DrawText("frente ->", (int)(areaCola.x + 5), (int)(areaCola.y + areaCola.height - 18), 12, COLOR_TEXTO_OSCURO);
+    DrawText("<- final", (int)(areaCola.x + areaCola.width - 55), (int)(areaCola.y + areaCola.height - 18), 12, COLOR_TEXTO_OSCURO);
+
+    int maxVisibles = (int)((areaCola.height - 50) / (barraH + sep));
+    int aMostrar = (tamCola < maxVisibles) ? tamCola : maxVisibles;
+
+    for (int i = 0; i < aMostrar; i++) {
         int valor = cola.getDatoEn(i);
-        Color color = (i == 0) ? COLOR_COLA_BARRA :
-                      ColorAlpha(COLOR_COLA_BARRA, 1.0f - i * 0.1f);
-        char texto[10];
-        std::sprintf(texto, "%d", valor);
-        DrawRectangle((int)areaCola.x + 5, (int)y, (int)barraAncho, (int)barraAlto, color);
-        DrawRectangleLines((int)areaCola.x + 5, (int)y, (int)barraAncho, (int)barraAlto, DARKGRAY);
-        DrawText(texto, (int)areaCola.x + 10, (int)y + 2, 12, BLACK);
-        y += barraAlto + 2;
+        const char* nombre = (grafo != nullptr) ? grafo->getNombreNodo(valor) : nullptr;
+
+        float intensidad = 1.0f - i * 0.08f;
+        if (intensidad < 0.4f) intensidad = 0.4f;
+        Color color = {
+            (unsigned char)(COLOR_COLA_BARRA.r * intensidad),
+            (unsigned char)(COLOR_COLA_BARRA.g * intensidad),
+            (unsigned char)(COLOR_COLA_BARRA.b * intensidad),
+            255
+        };
+
+        DrawRectangle((int)barraX0, (int)barraY, (int)barraW, (int)barraH, color);
+        DrawRectangleLines((int)barraX0, (int)barraY, (int)barraW, (int)barraH, COLOR_MARCO);
+
+        if (nombre != nullptr) {
+            DrawText(nombre, (int)barraX0 + 8, (int)barraY + 3, 16, BLACK);
+        } else {
+            char texto[10];
+            std::sprintf(texto, "%d", valor);
+            DrawText(texto, (int)barraX0 + 8, (int)barraY + 3, 16, BLACK);
+        }
+
+        if (i == 0) {
+            DrawText("FRENTE", (int)(areaCola.x + 5), (int)barraY + 3, 12, COLOR_DORADO);
+        }
+
+        barraY += barraH + sep;
+    }
+
+    if (tamCola > maxVisibles) {
+        char mas[20];
+        std::sprintf(mas, "+%d mas...", tamCola - maxVisibles);
+        DrawText(mas, (int)barraX0, (int)barraY + 2, 12, COLOR_TEXTO_OSCURO);
     }
 
     if (tamCola == 0) {
-        DrawText("(vacia)", (int)areaCola.x + 20, (int)y + 2, 12, COLOR_TEXTO_OSCURO);
+        DrawText("(vacia)", (int)(areaCola.x + 30), (int)(areaCola.y + 40), 14, COLOR_TEXTO_OSCURO);
     }
 }
 
-void PanelInfo::dibujarPilaVisual(const Pila& pila, Rectangle areaPila) {
-    DrawRectangleLinesEx(areaPila, 1, DARKGRAY);
-    DrawText("PILA (DFS)", (int)areaPila.x + 5, (int)areaPila.y + 2, 12, YELLOW);
+void PanelInfo::dibujarPilaVisual(const Pila& pila, Rectangle areaPila, const Grafo* grafo) {
+    DrawRectangleRec(areaPila, COLOR_PANEL_INTERNO);
+    DrawRectangleLinesEx(areaPila, 1, COLOR_MARCO);
+    DrawText("PILA (DFS)", (int)areaPila.x + 5, (int)areaPila.y + 3, 14, COLOR_DORADO);
 
     int tamPila = pila.obtenerTam();
-    float barraAncho = areaPila.width - 10;
-    float barraAlto = 18;
-    float y = areaPila.y + 20;
+    float sep = 4;
+    float barraH = 22;
+    float barraW = areaPila.width - 20;
+    float x = areaPila.x + 10;
 
-    for (int i = tamPila - 1; i >= 0 && (tamPila - 1 - i) < 8; i--) {
-        int valor = (pila.getDatos() != nullptr) ? pila.getDatos()[i] : -1;
-        float intensidad = 1.0f - (tamPila - 1 - i) * 0.1f;
-        if (intensidad < 0.3f) intensidad = 0.3f;
+    float yBase = areaPila.y + areaPila.height - 20;
+    int maxVisibles = (int)((areaPila.height - 60) / (barraH + sep));
+    int aMostrar = (tamPila < maxVisibles) ? tamPila : maxVisibles;
 
+    int* datos = pila.getDatos();
+
+    for (int i = 0; i < aMostrar; i++) {
+        int idxEnPila = tamPila - 1 - i;
+        int valor = (datos != nullptr && idxEnPila >= 0) ? datos[idxEnPila] : -1;
+        const char* nombre = (grafo != nullptr) ? grafo->getNombreNodo(valor) : nullptr;
+
+        float yBloque = yBase - (i + 1) * (barraH + sep);
+
+        float intensidad = 1.0f - i * 0.10f;
+        if (intensidad < 0.4f) intensidad = 0.4f;
         Color color = {
             (unsigned char)(COLOR_PILA_BARRA.r * intensidad),
             (unsigned char)(COLOR_PILA_BARRA.g * intensidad),
             (unsigned char)(COLOR_PILA_BARRA.b * intensidad),
             255
         };
-        char texto[10];
-        std::sprintf(texto, "%d", valor);
-        DrawRectangle((int)areaPila.x + 5, (int)y, (int)barraAncho, (int)barraAlto, color);
-        DrawRectangleLines((int)areaPila.x + 5, (int)y, (int)barraAncho, (int)barraAlto, DARKGRAY);
-        DrawText(texto, (int)areaPila.x + 10, (int)y + 2, 12, BLACK);
-        y += barraAlto + 2;
+
+        DrawRectangle((int)x, (int)yBloque, (int)barraW, (int)barraH, color);
+        DrawRectangleLines((int)x, (int)yBloque, (int)barraW, (int)barraH, COLOR_MARCO);
+
+        if (nombre != nullptr) {
+            DrawText(nombre, (int)x + 8, (int)yBloque + 3, 16, BLACK);
+        } else {
+            char texto[10];
+            std::sprintf(texto, "%d", valor);
+            DrawText(texto, (int)x + 8, (int)yBloque + 3, 16, BLACK);
+        }
+
+        if (i == 0) {
+            const char* tag = "TOP";
+            int anchoTag = MeasureText(tag, 12);
+            DrawText(tag, (int)(x + barraW - anchoTag - 8), (int)yBloque + 4, 12, COLOR_DORADO);
+        }
+    }
+
+    if (tamPila > maxVisibles) {
+        char mas[20];
+        std::sprintf(mas, "+%d mas...", tamPila - maxVisibles);
+        DrawText(mas, (int)x, (int)(areaPila.y + 25), 12, COLOR_TEXTO_OSCURO);
     }
 
     if (tamPila == 0) {
-        DrawText("(vacia)", (int)areaPila.x + 20, (int)y + 2, 12, COLOR_TEXTO_OSCURO);
+        DrawText("(vacia)", (int)(areaPila.x + 30), (int)(areaPila.y + 40), 14, COLOR_TEXTO_OSCURO);
     }
 }

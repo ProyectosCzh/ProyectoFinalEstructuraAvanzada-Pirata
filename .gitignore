@@ -39,3 +39,5 @@ Desktop.ini
 # ---- Archivos de respaldo ----
 *.bak
 *.old
+#xd
+.opencode/

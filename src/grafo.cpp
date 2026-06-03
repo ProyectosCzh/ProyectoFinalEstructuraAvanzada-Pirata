@@ -6,6 +6,7 @@ Grafo::Grafo(int capacidad) {
     this->capacidad = capacidad;
     this->numNodos = 0;
     this->nodos = new NodoGrafo[capacidad];
+    this->dirigido = false;
     for (int i = 0; i < capacidad; i++) {
         nodos[i].aristas = nullptr;
         nodos[i].nombre[0] = '\0';

@@ -15,7 +15,14 @@ Juego::Juego()
     frenteActual = 0;
     tamFrente = 0;
     topeLocal = -1;
-    bfsEncontrado = false;
+    dijkTamCola = 0;
+    dijkUActual = -1;
+    dijkPasoActual = 0;
+    nodoProcesandoIdx = -1;
+    nodoProcesandoNombre[0] = '\0';
+    pistaActiva[0] = '\0';
+    nodoPistaActual = -1;
+    nodoPistaSiguiente = -1;
     algoritmoUsado[0] = '\0';
 }
 
@@ -72,7 +79,6 @@ void Juego::iniciarBFS() {
     pasoActual = 0;
     frenteActual = 0;
     tamFrente = 0;
-    bfsEncontrado = false;
     std::strcpy(algoritmoUsado, "BFS");
 
     int n = grafo.getNumNodos();
@@ -80,6 +86,12 @@ void Juego::iniciarBFS() {
         visitadosAnim[i] = false;
         padres[i] = -1;
     }
+
+    colaAnimacion.vaciar();
+    pilaAnimacion.vaciar();
+    nodoProcesandoIdx = -1;
+    nodoProcesandoNombre[0] = '\0';
+    pistaActiva[0] = '\0';
 
     printf("Iniciando BFS desde nodo %d ('%s') hacia tesoro (%d)\n",
            nodoInicio, grafo.getNombreNodo(nodoInicio), nodoTesoro);
@@ -104,6 +116,12 @@ void Juego::iniciarDFS() {
         expandidos[i] = false;
     }
 
+    colaAnimacion.vaciar();
+    pilaAnimacion.vaciar();
+    nodoProcesandoIdx = -1;
+    nodoProcesandoNombre[0] = '\0';
+    pistaActiva[0] = '\0';
+
     printf("Iniciando DFS desde nodo %d ('%s') hacia tesoro (%d)\n",
            nodoInicio, grafo.getNombreNodo(nodoInicio), nodoTesoro);
 }
@@ -114,42 +132,68 @@ void Juego::iniciarDijkstra() {
         return;
     }
 
+    estado = EXPLORANDO_DIJKSTRA;
+    nodoInicio = nodoSeleccionado;
+    pasoActual = 0;
+    dijkPasoActual = 0;
+    dijkTamCola = 0;
+    dijkUActual = -1;
+    std::strcpy(algoritmoUsado, "Dijkstra");
+
     int n = grafo.getNumNodos();
     for (int i = 0; i < n; i++) {
         visitadosAnim[i] = false;
+        padres[i] = -1;
+        distanciasAnim[i] = 999999;
     }
 
-    costoTotal = explorador.dijkstra(nodoSeleccionado, nodoTesoro, padres, distanciasAnim);
+    colaAnimacion.vaciar();
+    pilaAnimacion.vaciar();
+    nodoProcesandoIdx = -1;
+    nodoProcesandoNombre[0] = '\0';
+    pistaActiva[0] = '\0';
 
-    if (costoTotal < 0) {
-        printf("No se encontro camino al tesoro\n");
-        return;
-    }
-
-    rutaOptima.vaciar();
-    explorador.reconstruirCamino(nodoTesoro, padres, rutaOptima);
-
-    for (int i = 0; i < rutaOptima.longitud(); i++) {
-        int nodo = rutaOptima.obtener(i);
-        if (nodo >= 0 && nodo < n) {
-            visitadosAnim[nodo] = true;
-        }
-    }
-
-    estado = RUTA_OPTIMA;
-    numVisitados = rutaOptima.longitud();
-    std::strcpy(algoritmoUsado, "Dijkstra");
-
-    printf("Dijkstra completo. Costo: %d, Ruta: %d nodos\n", costoTotal, rutaOptima.longitud());
+    printf("Iniciando Dijkstra desde nodo %d ('%s') hacia tesoro (%d)\n",
+           nodoInicio, grafo.getNombreNodo(nodoInicio), nodoTesoro);
 }
 
-void Juego::navegarPorPistas() {
+void Juego::iniciarNavegacionPistas() {
     if (nodoSeleccionado < 0) {
         printf("Seleccione un nodo primero\n");
         return;
     }
 
-    printf("Navegando por pistas desde '%s'...\n", grafo.getNombreNodo(nodoSeleccionado));
+    estado = NAVEGANDO_PISTAS;
+    nodoPistaActual = nodoSeleccionado;
+    nodoPistaSiguiente = -1;
+    pasoActual = 0;
+    std::strcpy(algoritmoUsado, "Pistas");
+
+    int n = grafo.getNumNodos();
+    for (int i = 0; i < n; i++) {
+        visitadosAnim[i] = false;
+    }
+    visitadosAnim[nodoPistaActual] = true;
+
+    const char* nombre = grafo.getNombreNodo(nodoPistaActual);
+    const char* pista = nombre ? pistas.obtener(nombre) : nullptr;
+    if (pista != nullptr) {
+        std::strncpy(pistaActiva, pista, 199);
+        pistaActiva[199] = '\0';
+    } else {
+        pistaActiva[0] = '\0';
+    }
+
+    const char* destino = (pista != nullptr) ? arbolPistas.interpretar(pista) : nullptr;
+    if (destino != nullptr) {
+        nodoPistaSiguiente = grafo.buscarNodo(destino);
+    }
+
+    nodoProcesandoIdx = nodoPistaActual;
+    std::strncpy(nodoProcesandoNombre, nombre ? nombre : "?", 63);
+    nodoProcesandoNombre[63] = '\0';
+
+    printf("Navegando por pistas desde '%s'...\n", nombre ? nombre : "?");
 }
 
 void Juego::pasoAnimacion() {
@@ -160,31 +204,20 @@ void Juego::pasoAnimacion() {
                                               pasoActual);
         pasoActual++;
 
-        if (encontrado) {
-            rutaOptima.vaciar();
-            explorador.reconstruirCamino(nodoTesoro, padres, rutaOptima);
-            costoTotal = 0;
-            for (int i = 0; i < rutaOptima.longitud() - 1; i++) {
-                int a = rutaOptima.obtener(i);
-                int b = rutaOptima.obtener(i + 1);
-                Arista* arista = grafo.getAristas(a);
-                while (arista != nullptr) {
-                    if (arista->destino == b) {
-                        costoTotal += arista->peso;
-                        break;
-                    }
-                    arista = arista->siguiente;
+        if (tamFrente > 0 && frenteActual < tamFrente) {
+            int proc = colaLocal[frenteActual - (encontrado ? 1 : 0)];
+            if (proc >= 0 && proc < grafo.getNumNodos()) {
+                nodoProcesandoIdx = proc;
+                const char* nom = grafo.getNombreNodo(proc);
+                std::strncpy(nodoProcesandoNombre, nom ? nom : "?", 63);
+                nodoProcesandoNombre[63] = '\0';
+                const char* p = nom ? pistas.obtener(nom) : nullptr;
+                if (p != nullptr) {
+                    std::strncpy(pistaActiva, p, 199);
+                    pistaActiva[199] = '\0';
                 }
             }
-            estado = COMPLETADO;
-            printf("BFS: Tesoro encontrado! Costo: %d\n", costoTotal);
         }
-    } else if (estado == EXPLORANDO_DFS) {
-        bool encontrado = explorador.dfsPaso(nodoInicio, nodoTesoro, padres,
-                                              numVisitados, visitadosAnim,
-                                              topeLocal, pilaLocal, expandidos,
-                                              pasoActual);
-        pasoActual++;
 
         if (encontrado) {
             rutaOptima.vaciar();
@@ -203,7 +236,119 @@ void Juego::pasoAnimacion() {
                 }
             }
             estado = COMPLETADO;
+            numVisitados = rutaOptima.longitud();
+            nodoProcesandoIdx = -1;
+            printf("BFS: Tesoro encontrado! Costo: %d\n", costoTotal);
+        }
+    } else if (estado == EXPLORANDO_DFS) {
+        bool encontrado = explorador.dfsPaso(nodoInicio, nodoTesoro, padres,
+                                              numVisitados, visitadosAnim,
+                                              topeLocal, pilaLocal, expandidos,
+                                              pasoActual);
+        pasoActual++;
+
+        if (topeLocal >= 0 && pilaLocal != nullptr) {
+            int proc = pilaLocal[topeLocal];
+            if (proc >= 0 && proc < grafo.getNumNodos()) {
+                nodoProcesandoIdx = proc;
+                const char* nom = grafo.getNombreNodo(proc);
+                std::strncpy(nodoProcesandoNombre, nom ? nom : "?", 63);
+                nodoProcesandoNombre[63] = '\0';
+                const char* p = nom ? pistas.obtener(nom) : nullptr;
+                if (p != nullptr) {
+                    std::strncpy(pistaActiva, p, 199);
+                    pistaActiva[199] = '\0';
+                }
+            }
+        } else {
+            nodoProcesandoIdx = -1;
+        }
+
+        if (encontrado) {
+            rutaOptima.vaciar();
+            explorador.reconstruirCamino(nodoTesoro, padres, rutaOptima);
+            costoTotal = 0;
+            for (int i = 0; i < rutaOptima.longitud() - 1; i++) {
+                int a = rutaOptima.obtener(i);
+                int b = rutaOptima.obtener(i + 1);
+                Arista* arista = grafo.getAristas(a);
+                while (arista != nullptr) {
+                    if (arista->destino == b) {
+                        costoTotal += arista->peso;
+                        break;
+                    }
+                    arista = arista->siguiente;
+                }
+            }
+            estado = COMPLETADO;
+            numVisitados = rutaOptima.longitud();
+            nodoProcesandoIdx = -1;
             printf("DFS: Tesoro encontrado! Costo: %d\n", costoTotal);
+        }
+    } else if (estado == EXPLORANDO_DIJKSTRA) {
+        bool encontrado = explorador.dijkstraPaso(nodoInicio, nodoTesoro,
+                                                   padres, distanciasAnim,
+                                                   visitadosAnim, dijkPasoActual,
+                                                   dijkUActual, dijkColaLocal, dijkTamCola);
+        pasoActual++;
+        numVisitados = dijkTamCola;
+
+        if (dijkUActual >= 0 && dijkUActual < grafo.getNumNodos()) {
+            nodoProcesandoIdx = dijkUActual;
+            const char* nom = grafo.getNombreNodo(dijkUActual);
+            std::strncpy(nodoProcesandoNombre, nom ? nom : "?", 63);
+            nodoProcesandoNombre[63] = '\0';
+        }
+
+        if (encontrado) {
+            costoTotal = distanciasAnim[nodoTesoro];
+            rutaOptima.vaciar();
+            explorador.reconstruirCamino(nodoTesoro, padres, rutaOptima);
+            for (int i = 0; i < rutaOptima.longitud(); i++) {
+                int nodo = rutaOptima.obtener(i);
+                if (nodo >= 0 && nodo < grafo.getNumNodos()) {
+                    visitadosAnim[nodo] = true;
+                }
+            }
+            estado = COMPLETADO;
+            nodoProcesandoIdx = -1;
+            printf("Dijkstra: Tesoro encontrado! Costo: %d\n", costoTotal);
+        }
+    } else if (estado == NAVEGANDO_PISTAS) {
+        if (nodoPistaSiguiente < 0) {
+            estado = COMPLETADO;
+            return;
+        }
+        int prev = nodoPistaActual;
+        nodoPistaActual = nodoPistaSiguiente;
+        nodoPistaSiguiente = -1;
+        visitadosAnim[nodoPistaActual] = true;
+
+        const char* nombre = grafo.getNombreNodo(nodoPistaActual);
+        const char* pista = nombre ? pistas.obtener(nombre) : nullptr;
+        if (pista != nullptr) {
+            std::strncpy(pistaActiva, pista, 199);
+            pistaActiva[199] = '\0';
+        } else {
+            pistaActiva[0] = '\0';
+        }
+
+        if (pista != nullptr && std::strcmp(pista, "!Lo has encontrado!") != 0) {
+            const char* destino = arbolPistas.interpretar(pista);
+            if (destino != nullptr) {
+                nodoPistaSiguiente = grafo.buscarNodo(destino);
+            }
+        } else {
+            nodoPistaSiguiente = -1;
+        }
+
+        nodoProcesandoIdx = nodoPistaActual;
+        std::strncpy(nodoProcesandoNombre, nombre ? nombre : "?", 63);
+        nodoProcesandoNombre[63] = '\0';
+        pasoActual++;
+
+        if (nodoPistaSiguiente < 0) {
+            estado = COMPLETADO;
         }
     }
 }
@@ -218,6 +363,14 @@ void Juego::limpiar() {
     colaAnimacion.vaciar();
     pilaAnimacion.vaciar();
     rutaOptima.vaciar();
+    nodoProcesandoIdx = -1;
+    nodoProcesandoNombre[0] = '\0';
+    pistaActiva[0] = '\0';
+    nodoPistaActual = -1;
+    nodoPistaSiguiente = -1;
+    dijkPasoActual = 0;
+    dijkTamCola = 0;
+    dijkUActual = -1;
 
     int n = grafo.getNumNodos();
     for (int i = 0; i < n; i++) {

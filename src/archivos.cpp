@@ -11,7 +11,6 @@ bool cargarGrafo(const char* ruta, Grafo& grafo) {
     }
 
     char linea[512];
-    int numLinea = 0;
 
     while (std::fgets(linea, sizeof(linea), archivo) != nullptr) {
         if (linea[0] == '\n' || linea[0] == '\0' || linea[0] == '#') {
@@ -23,45 +22,54 @@ bool cargarGrafo(const char* ruta, Grafo& grafo) {
             linea[len - 1] = '\0';
         }
 
-        if (numLinea == 0) {
-            if (std::strncmp(linea, "nodos:", 6) == 0) {
-                char* token = std::strtok(linea + 6, " ,");
-                while (token != nullptr) {
-                    grafo.agregarNodo(token);
-                    token = std::strtok(nullptr, " ,");
-                }
-            }
-        } else {
-            char* origenStr = std::strtok(linea, ":");
-            if (origenStr == nullptr) continue;
-
-            int origen = grafo.buscarNodo(origenStr);
-            if (origen < 0) {
-                printf("Warning: nodo '%s' no encontrado\n", origenStr);
-                continue;
-            }
-
-            char* destinos = std::strtok(nullptr, ":");
-            if (destinos == nullptr) continue;
-
-            char* token = std::strtok(destinos, ",");
-            while (token != nullptr) {
-                char destinoStr[50];
-                int peso = 0;
-                if (std::sscanf(token, " %49[^(](%d)", destinoStr, &peso) >= 2) {
-                    int destino = grafo.buscarNodo(destinoStr);
-                    if (destino >= 0) {
-                        grafo.agregarArista(origen, destino, peso);
-                    }
-                }
-                token = std::strtok(nullptr, ",");
-            }
+        if (std::strncmp(linea, "dirigido:", 9) == 0) {
+            char val[16] = "";
+            std::sscanf(linea + 9, " %15s", val);
+            bool d = (std::strcmp(val, "true") == 0) ||
+                     (std::strcmp(val, "1") == 0) ||
+                     (std::strcmp(val, "si") == 0);
+            grafo.setDirigido(d);
+            continue;
         }
-        numLinea++;
+
+        if (std::strncmp(linea, "nodos:", 6) == 0) {
+            char* token = std::strtok(linea + 6, " ,");
+            while (token != nullptr) {
+                grafo.agregarNodo(token);
+                token = std::strtok(nullptr, " ,");
+            }
+            continue;
+        }
+
+        char* origenStr = std::strtok(linea, ":");
+        if (origenStr == nullptr) continue;
+
+        int origen = grafo.buscarNodo(origenStr);
+        if (origen < 0) {
+            printf("Warning: nodo '%s' no encontrado\n", origenStr);
+            continue;
+        }
+
+        char* destinos = std::strtok(nullptr, ":");
+        if (destinos == nullptr) continue;
+
+        char* token = std::strtok(destinos, ",");
+        while (token != nullptr) {
+            char destinoStr[50];
+            int peso = 0;
+            if (std::sscanf(token, " %49[^(](%d)", destinoStr, &peso) >= 2) {
+                int destino = grafo.buscarNodo(destinoStr);
+                if (destino >= 0) {
+                    grafo.agregarArista(origen, destino, peso);
+                }
+            }
+            token = std::strtok(nullptr, ",");
+        }
     }
 
     std::fclose(archivo);
-    printf("Grafo cargado: %d nodos desde %s\n", grafo.getNumNodos(), ruta);
+    printf("Grafo cargado: %d nodos desde %s (dirigido=%s)\n",
+           grafo.getNumNodos(), ruta, grafo.esDirigido() ? "si" : "no");
     return true;
 }
 

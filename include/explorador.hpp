@@ -34,6 +34,9 @@ public:
                  int paso);
 
     int dijkstra(int nodoInicio, int nodoDestino, int* padres, int* distancias);
+    bool dijkstraPaso(int nodoInicio, int nodoDestino, int* padres, int* distancias,
+                      bool* visitados, int& pasoActual, int& uActual,
+                      int* colaLocal, int& tamCola);
 
     int navegarPorPistas(int nodoInicio, int* caminoPistas, int& numPasos);
 

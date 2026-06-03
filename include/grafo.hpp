@@ -17,6 +17,7 @@ private:
     NodoGrafo* nodos;
     int numNodos;
     int capacidad;
+    bool dirigido;
 
 public:
     Grafo(int capacidad = 100);
@@ -28,6 +29,9 @@ public:
     Arista* getAristas(int nodo) const;
     int getNumNodos() const;
     void limpiar();
+
+    void setDirigido(bool d) { dirigido = d; }
+    bool esDirigido() const { return dirigido; }
 };
 
 #endif

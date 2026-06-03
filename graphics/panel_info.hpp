@@ -5,6 +5,7 @@
 #include "../include/lista.hpp"
 #include "../include/cola.hpp"
 #include "../include/pila.hpp"
+#include "../include/grafo.hpp"
 
 class PanelInfo {
 private:
@@ -19,9 +20,11 @@ public:
                  int pasoActual,
                  const Lista& ruta,
                  const Cola& cola,
-                 const Pila& pila);
-    void dibujarColaVisual(const Cola& cola, Rectangle areaCola);
-    void dibujarPilaVisual(const Pila& pila, Rectangle areaPila);
+                 const Pila& pila,
+                 const Grafo* grafo,
+                 const char* nodoProcesando);
+    void dibujarColaVisual(const Cola& cola, Rectangle areaCola, const Grafo* grafo);
+    void dibujarPilaVisual(const Pila& pila, Rectangle areaPila, const Grafo* grafo);
 };
 
 #endif
