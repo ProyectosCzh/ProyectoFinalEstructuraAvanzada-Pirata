@@ -3,7 +3,6 @@
 
 #include "raylib.h"
 
-const Color COLOR_FONDO           = { 24,  35,  60, 255};
 const Color COLOR_FONDO_SUPERIOR  = { 35,  50,  85, 255};
 const Color COLOR_FONDO_INFERIOR  = { 10,  15,  30, 255};
 

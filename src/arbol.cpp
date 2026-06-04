@@ -32,7 +32,6 @@ void Arbol::crearRaiz(const char* pista, const char* destino) {
     raiz->destino[49] = '\0';
     raiz->hijos = nullptr;
     raiz->numHijos = 0;
-    raiz->padre = nullptr;
 }
 
 NodoArbol* Arbol::agregarHijo(NodoArbol* padreNodo, const char* pista, const char* destino) {
@@ -52,7 +51,6 @@ NodoArbol* Arbol::agregarHijo(NodoArbol* padreNodo, const char* pista, const cha
     hijo->destino[49] = '\0';
     hijo->hijos = nullptr;
     hijo->numHijos = 0;
-    hijo->padre = padreNodo;
 
     padreNodo->hijos[padreNodo->numHijos] = hijo;
     padreNodo->numHijos++;

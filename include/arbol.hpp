@@ -6,7 +6,6 @@ struct NodoArbol {
     char destino[50];
     NodoArbol** hijos;
     int numHijos;
-    NodoArbol* padre;
 };
 
 class Arbol {

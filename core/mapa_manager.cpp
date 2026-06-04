@@ -76,14 +76,6 @@ void MapaManager::getRutaBase(char* out) const {
     std::sprintf(out, "maps/%s/", mapas[actual].dirName);
 }
 
-void MapaManager::getRutaGrafo(char* out) const {
-    std::sprintf(out, "maps/%s/grafo.txt", mapas[actual].dirName);
-}
-
-void MapaManager::getRutaPistas(char* out) const {
-    std::sprintf(out, "maps/%s/pistas.txt", mapas[actual].dirName);
-}
-
 void MapaManager::getRutaCoords(char* out) const {
     std::sprintf(out, "maps/%s/coords.txt", mapas[actual].dirName);
 }

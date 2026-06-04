@@ -1,17 +1,7 @@
-# RUTA DE PISTAS: playa → pueblo_pirata → r_caleta → p_bosque → bosque → rio → cascada → valle → ruinas → laguna → templo → atalaya → fortin → mercado → ermita → tesoro
-playa:Los pescadores del pueblo saben algo:pueblo_pirata
-pueblo_pirata:El humo en la caleta escondida senala el camino:r_caleta
-r_caleta:Las huellas en el barro llevan al bosque espeso:p_bosque
-p_bosque:Los arboles mas viejos guardan el secreto:bosque
-bosque:Sigue el murmullo del agua corriente:rio
-rio:Remonta la corriente hasta que el agua caiga del cielo:cascada
-cascada:El velo de agua oculta un pasaje:valle
-valle:Entre las colinas verdes yacen piedras antiguas:ruinas
-ruinas:El reflejo en el ojo de la estatua apunta a la laguna:laguna
-laguna:El templo emerge entre la niebla matutina:templo
-templo:Desde la torre mas alta se divisa una luz:atalaya
-atalaya:La fortaleza junto al acantilado resguarda un secreto:fortin
-fortin:El cofre del capitan esta vacio, la llave esta en el mercado:mercado
-mercado:El ermitano del cerro conoce el ultimo paso:ermita
-ermita:El tesoro brilla bajo la luz del sol poniente:tesoro
+# RUTA DE PISTAS: playa -> pueblo -> caleta -> valle -> laguna -> tesoro
+playa:El loro en la palmera repite "pueblo" sin cesar:pueblo
+pueblo:La anciana del mercado seniala el camino a la caleta:caleta
+caleta:Las marcas de marea en las rocas apuntan al valle:valle
+valle:Los petroglifos en la cueva muestran una laguna:laguna
+laguna:El reflejo del sol en el agua revela el tesoro:tesoro
 tesoro:!Lo has encontrado!:tesoro

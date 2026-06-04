@@ -23,8 +23,6 @@ public:
     const InfoMapa& getMapa(int idx) const;
     const InfoMapa& getActualMapa() const;
     void getRutaBase(char* out) const;
-    void getRutaGrafo(char* out) const;
-    void getRutaPistas(char* out) const;
     void getRutaCoords(char* out) const;
     void getRutaFondo(char* out) const;
     void getRutaResultado(char* out) const;

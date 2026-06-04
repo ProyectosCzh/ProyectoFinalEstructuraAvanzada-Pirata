@@ -65,7 +65,6 @@ public:
     void finalizarArrastreNodo();
     bool estaArrastrandoNodo() const { return nodoArrastrando >= 0; }
     void setModoEdicion(bool ed) { modoEdicion = ed; }
-    bool getModoEdicion() const { return modoEdicion; }
 };
 
 #endif

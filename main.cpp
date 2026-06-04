@@ -7,8 +7,6 @@
 #include "graphics/ui_arbol.hpp"
 #include "graphics/colores.hpp"
 #include <cstdio>
-#include <cstring>
-#include <cmath>
 
 struct Boton {
     Rectangle area;
@@ -139,7 +137,6 @@ int main() {
 
         bool sobreGrafo = CheckCollisionPointRec(mouse, { 0, 0, anchoGrafo, yBarraBotones });
         bool sobreArbol = CheckCollisionPointRec(mouse, { anchoGrafo, altoPanelSup, anchoPanel, altoPanelInf });
-        bool sobreBotones = CheckCollisionPointRec(mouse, { 0, yBarraBotones, ANCHO, altoBarraBotones + altoBarraAnimador });
 
         float deltaWheel = GetMouseWheelMove();
         if (deltaWheel != 0) {
