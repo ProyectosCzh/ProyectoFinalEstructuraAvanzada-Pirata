@@ -106,3 +106,21 @@ bool Grafo::tieneCoordenadas() const {
 void Grafo::marcarCoordenadas(bool val) {
     coordsDefinidas = val;
 }
+
+void Grafo::limpiar() {
+    for (int i = 0; i < numNodos; i++) {
+        Arista* actual = nodos[i].aristas;
+        while (actual != nullptr) {
+            Arista* siguiente = actual->siguiente;
+            delete actual;
+            actual = siguiente;
+        }
+        nodos[i].aristas = nullptr;
+        nodos[i].nombre[0] = '\0';
+        nodos[i].x = 0.0f;
+        nodos[i].y = 0.0f;
+    }
+    numNodos = 0;
+    dirigido = false;
+    coordsDefinidas = false;
+}

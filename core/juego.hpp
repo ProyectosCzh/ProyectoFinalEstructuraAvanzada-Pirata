@@ -69,7 +69,8 @@ public:
     Juego();
     ~Juego();
 
-    bool cargarDatos();
+    bool cargarDatos(const char* basePath);
+    void limpiarDatos();
     void seleccionarNodo(int indice);
     void iniciarBFS();
     void iniciarDFS();
@@ -77,7 +78,7 @@ public:
     void iniciarNavegacionPistas();
     void pasoAnimacion();
     void limpiar();
-    bool guardarResultado();
+    bool guardarResultado(const char* ruta);
     bool guardarCoordenadas(const char* ruta);
 
     EstadoJuego getEstado() const { return estado; }

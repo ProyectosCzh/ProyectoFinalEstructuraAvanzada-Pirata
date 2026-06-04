@@ -77,6 +77,13 @@ NodoArbol* Arbol::getRaiz() const {
     return raiz;
 }
 
+void Arbol::limpiar() {
+    if (raiz != nullptr) {
+        limpiarRecursivo(raiz);
+        raiz = nullptr;
+    }
+}
+
 const char* Arbol::interpretar(const char* pista) const {
     NodoArbol* nodo = buscarNodoRecursivo(raiz, pista);
     if (nodo != nullptr) {

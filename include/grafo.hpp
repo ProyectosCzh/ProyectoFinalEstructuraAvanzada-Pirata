@@ -37,6 +37,7 @@ public:
     float getCoordY(int indice) const;
     bool tieneCoordenadas() const;
     void marcarCoordenadas(bool val);
+    void limpiar();
 };
 
 #endif

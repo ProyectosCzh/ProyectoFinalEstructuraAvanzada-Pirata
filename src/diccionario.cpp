@@ -39,6 +39,18 @@ void Diccionario::insertar(const char* clave, const char* valor) {
     tabla[indice] = nuevo;
 }
 
+void Diccionario::vaciar() {
+    for (int i = 0; i < TAM_TABLA; i++) {
+        ParClaveValor* actual = tabla[i];
+        while (actual != nullptr) {
+            ParClaveValor* siguiente = actual->siguiente;
+            delete actual;
+            actual = siguiente;
+        }
+        tabla[i] = nullptr;
+    }
+}
+
 const char* Diccionario::obtener(const char* clave) const {
     int indice = hash(clave);
     ParClaveValor* actual = tabla[indice];

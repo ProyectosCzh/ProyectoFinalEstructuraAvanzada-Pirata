@@ -33,25 +33,31 @@ Juego::Juego()
 Juego::~Juego() {
 }
 
-bool Juego::cargarDatos() {
+bool Juego::cargarDatos(const char* basePath) {
     bool ok = true;
 
-    if (!cargarGrafo("data/grafo.txt", grafo)) {
+    char buf[128];
+
+    std::sprintf(buf, "%sgrafo.txt", basePath);
+    if (!cargarGrafo(buf, grafo)) {
         printf("Error cargando grafo\n");
         ok = false;
     }
 
-    if (!cargarPistas("data/pistas.txt", pistas)) {
+    std::sprintf(buf, "%spistas.txt", basePath);
+    if (!cargarPistas(buf, pistas)) {
         printf("Error cargando pistas\n");
         ok = false;
     }
 
-    if (!cargarArbolPistas("data/pistas.txt", arbolPistas)) {
+    std::sprintf(buf, "%spistas.txt", basePath);
+    if (!cargarArbolPistas(buf, arbolPistas)) {
         printf("Error cargando arbol de pistas\n");
         ok = false;
     }
 
-    if (!cargarCoordenadas("data/coords.txt", grafo)) {
+    std::sprintf(buf, "%scoords.txt", basePath);
+    if (!cargarCoordenadas(buf, grafo)) {
         printf("Sin coordenadas externas, se usara layout rejilla\n");
     }
 
@@ -64,6 +70,17 @@ bool Juego::cargarDatos() {
     }
 
     return ok;
+}
+
+void Juego::limpiarDatos() {
+    grafo.limpiar();
+    pistas.vaciar();
+    arbolPistas.limpiar();
+    colaAnimacion.vaciar();
+    pilaAnimacion.vaciar();
+    rutaOptima.vaciar();
+    limpiar();
+    nodoTesoro = -1;
 }
 
 void Juego::seleccionarNodo(int indice) {
@@ -383,8 +400,8 @@ void Juego::limpiar() {
     }
 }
 
-bool Juego::guardarResultado() {
-    return ::guardarResultado("data/resultado.txt", rutaOptima, grafo, algoritmoUsado, costoTotal, numVisitados);
+bool Juego::guardarResultado(const char* ruta) {
+    return ::guardarResultado(ruta, rutaOptima, grafo, algoritmoUsado, costoTotal, numVisitados);
 }
 
 bool Juego::guardarCoordenadas(const char* ruta) {

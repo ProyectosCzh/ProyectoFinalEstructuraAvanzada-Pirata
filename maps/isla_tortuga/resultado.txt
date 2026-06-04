@@ -1,0 +1,8 @@
+RUTA AL TESORO
+==============
+
+Ruta: 
+Costo total: 0
+Visitados: 0 nodos
+Algoritmo usado: Dijkstra
+

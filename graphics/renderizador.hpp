@@ -58,6 +58,8 @@ public:
     void resetearVista() { offset = {0, 0}; zoom = 1.0f; }
     float getZoom() const { return zoom; }
 
+    void cargarFondo(const char* ruta);
+    void recargarGrafo(Grafo* g, float ancho, float alto);
     bool iniciarArrastreNodo(Vector2 mousePos);
     void actualizarArrastreNodo(Vector2 mousePos);
     void finalizarArrastreNodo();

@@ -1,0 +1,22 @@
+# Coordenadas virtuales 0-1000
+# Formato: nombre=x y
+
+playa=917.7 656.7
+pueblo_pirata=734.4 659.7
+bahia=746.1 775.0
+r_caleta=600.4 749.5
+p_bosque=574.1 574.1
+montana=649.3 403.7
+bosque=493.1 402.5
+rio=358.0 505.1
+cascada=449.8 740.4
+valle=848.4 518.5
+pantano=935.4 378.9
+ruinas=747.9 307.8
+laguna=464.0 270.7
+templo=135.4 293.9
+atalaya=64.4 511.1
+fortin=91.9 640.4
+mercado=275.5 659.3
+ermita=319.4 767.9
+tesoro=114.6 848.1

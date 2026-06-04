@@ -81,18 +81,44 @@ void Renderizador::usarCoordenadasDesdeGrafo() {
     }
 }
 
-void Renderizador::dibujarFondo() {
-    if (!fondoCargado) {
-        Image img = LoadImage("MAPAISLA2.jpg");
-        if (img.data != nullptr) {
-            texturaFondo = LoadTextureFromImage(img);
-            UnloadImage(img);
-            fondoCargado = (texturaFondo.id > 0);
-            if (fondoCargado) {
-                printf("Textura de fondo cargada: %dx%d\n", texturaFondo.width, texturaFondo.height);
-            }
+void Renderizador::cargarFondo(const char* ruta) {
+    if (fondoCargado) {
+        UnloadTexture(texturaFondo);
+        fondoCargado = false;
+    }
+    Image img = LoadImage(ruta);
+    if (img.data != nullptr) {
+        texturaFondo = LoadTextureFromImage(img);
+        UnloadImage(img);
+        fondoCargado = (texturaFondo.id > 0);
+        if (fondoCargado) {
+            printf("Textura de fondo cargada: %dx%d (%s)\n", texturaFondo.width, texturaFondo.height, ruta);
         }
     }
+}
+
+void Renderizador::recargarGrafo(Grafo* g, float ancho, float alto) {
+    delete[] nodosVisuales;
+    grafo = g;
+    numNodos = g->getNumNodos();
+    anchoPanel = ancho;
+    altoPanel = alto;
+    nodosVisuales = new NodoVisual[numNodos];
+    offset = { 0, 0 };
+    zoom = 1.0f;
+    nodoHover = -1;
+    modoEdicion = false;
+    nodoArrastrando = -1;
+
+    if (grafo->tieneCoordenadas()) {
+        usarCoordenadasDesdeGrafo();
+    } else {
+        calcularLayoutRejilla();
+    }
+    resetearColores();
+}
+
+void Renderizador::dibujarFondo() {
     if (!fondoCargado) return;
 
     float scaleX = anchoPanel / (float)texturaFondo.width;
