@@ -24,7 +24,7 @@ Juego::Juego()
     nodoPistaActual = -1;
     nodoPistaSiguiente = -1;
     algoritmoUsado[0] = '\0';
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < MAX_NODOS; i++) {
         visitadosAnim[i] = false;
         enColaAnim[i] = false;
     }
@@ -105,7 +105,6 @@ void Juego::iniciarAlgoritmo(EstadoJuego nuevoEstado, const char* algoNombre) {
         visitadosAnim[i] = false;
         enColaAnim[i] = false;
         padres[i] = -1;
-        expandidos[i] = false;
     }
 
     colaAnimacion.vaciar();
@@ -195,10 +194,6 @@ void Juego::pasoAnimacion() {
             int v = colaLocal[i];
             if (v >= 0 && v < n) enColaAnim[v] = true;
         }
-        for (int i = 0; i < colaAnimacion.obtenerTam(); i++) {
-            int v = colaAnimacion.getDatoEn(i);
-            if (v >= 0 && v < n) enColaAnim[v] = true;
-        }
 
         if (tamFrente > 0 && frenteActual > 0) {
             int proc = colaLocal[frenteActual - 1];
@@ -228,9 +223,9 @@ void Juego::pasoAnimacion() {
         }
     } else if (estado == EXPLORANDO_DFS) {
         bool encontrado = explorador.dfsPaso(nodoInicio, nodoTesoro, padres,
-                                              numVisitados, visitadosAnim,
-                                              topeLocal, pilaLocal, expandidos,
-                                              pasoActual);
+                                               numVisitados, visitadosAnim,
+                                               topeLocal, pilaLocal,
+                                               pasoActual);
         pasoActual++;
 
         int n = grafo.getNumNodos();
@@ -238,13 +233,6 @@ void Juego::pasoAnimacion() {
         for (int i = 0; i <= topeLocal; i++) {
             int v = pilaLocal[i];
             if (v >= 0 && v < n) enColaAnim[v] = true;
-        }
-        for (int i = 0; i < pilaAnimacion.obtenerTam(); i++) {
-            int* datos = pilaAnimacion.getDatos();
-            if (datos != nullptr) {
-                int v = datos[i];
-                if (v >= 0 && v < n) enColaAnim[v] = true;
-            }
         }
 
         if (topeLocal >= 0) {
@@ -396,7 +384,6 @@ void Juego::limpiar() {
     for (int i = 0; i < n; i++) {
         visitadosAnim[i] = false;
         enColaAnim[i] = false;
-        expandidos[i] = false;
     }
 }
 

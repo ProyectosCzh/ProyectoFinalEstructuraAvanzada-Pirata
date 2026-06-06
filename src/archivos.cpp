@@ -61,6 +61,9 @@ bool cargarGrafo(const char* ruta, Grafo& grafo) {
                 int destino = grafo.buscarNodo(destinoStr);
                 if (destino >= 0) {
                     grafo.agregarArista(origen, destino, peso);
+                    if (!grafo.esDirigido()) {
+                        grafo.agregarArista(destino, origen, peso);
+                    }
                 }
             }
             token = std::strtok(nullptr, ",");

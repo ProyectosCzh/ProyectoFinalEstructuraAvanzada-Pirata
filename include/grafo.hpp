@@ -1,6 +1,8 @@
 #ifndef GRAFO_HPP
 #define GRAFO_HPP
 
+#define MAX_NODOS 100
+
 struct Arista {
     int destino;
     int peso;

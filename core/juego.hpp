@@ -36,19 +36,18 @@ private:
     int numVisitados;
     char algoritmoUsado[50];
 
-    int padres[100];
-    bool visitadosAnim[100];
-    bool enColaAnim[100];
-    int distanciasAnim[100];
-    int colaLocal[100];
-    int pilaLocal[100];
-    bool expandidos[100];
+    int padres[MAX_NODOS];
+    bool visitadosAnim[MAX_NODOS];
+    bool enColaAnim[MAX_NODOS];
+    int distanciasAnim[MAX_NODOS];
+    int colaLocal[MAX_NODOS];
+    int pilaLocal[MAX_NODOS];
     int frenteActual;
     int tamFrente;
     int topeLocal;
     int pasoActual;
 
-    int dijkColaLocal[100];
+    int dijkColaLocal[MAX_NODOS];
     int dijkTamCola;
     int dijkUActual;
     int dijkPasoActual;
