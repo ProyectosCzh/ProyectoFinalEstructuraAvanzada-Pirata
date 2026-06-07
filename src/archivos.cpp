@@ -61,6 +61,9 @@ bool cargarGrafo(const char* ruta, Grafo& grafo) {
                 int destino = grafo.buscarNodo(destinoStr);
                 if (destino >= 0) {
                     grafo.agregarArista(origen, destino, peso);
+                    if (!grafo.esDirigido()) {
+                        grafo.agregarArista(destino, origen, peso);
+                    }
                 }
             }
             token = std::strtok(nullptr, ",");
@@ -146,6 +149,68 @@ bool cargarArbolPistas(const char* ruta, Arbol& arbol) {
 
     std::fclose(archivo);
     printf("Arbol de pistas cargado: %d entradas desde %s\n", numEntradas, ruta);
+    return true;
+}
+
+bool cargarCoordenadas(const char* ruta, Grafo& grafo) {
+    FILE* archivo = std::fopen(ruta, "r");
+    if (archivo == nullptr) {
+        printf("Warning: no se pudo abrir %s (usando layout rejilla)\n", ruta);
+        return false;
+    }
+
+    char linea[256];
+    int cargadas = 0;
+
+    while (std::fgets(linea, sizeof(linea), archivo) != nullptr) {
+        if (linea[0] == '\n' || linea[0] == '\0' || linea[0] == '#') {
+            continue;
+        }
+
+        size_t len = std::strlen(linea);
+        if (len > 0 && linea[len - 1] == '\n') {
+            linea[len - 1] = '\0';
+        }
+
+        char nombre[50];
+        float x, y;
+        if (std::sscanf(linea, " %49[^=]=%f %f", nombre, &x, &y) >= 3) {
+            int idx = grafo.buscarNodo(nombre);
+            if (idx >= 0) {
+                grafo.setCoordenada(idx, x, y);
+                cargadas++;
+            }
+        }
+    }
+
+    std::fclose(archivo);
+    printf("Coordenadas cargadas: %d nodos desde %s\n", cargadas, ruta);
+    if (cargadas > 0) {
+        grafo.marcarCoordenadas(true);
+    }
+    return cargadas > 0;
+}
+
+bool guardarCoordenadas(const char* ruta, const Grafo& grafo) {
+    FILE* archivo = std::fopen(ruta, "w");
+    if (archivo == nullptr) {
+        printf("Error: no se pudo crear %s\n", ruta);
+        return false;
+    }
+
+    std::fprintf(archivo, "# Coordenadas virtuales 0-1000\n");
+    std::fprintf(archivo, "# Formato: nombre=x y\n\n");
+
+    int n = grafo.getNumNodos();
+    for (int i = 0; i < n; i++) {
+        const char* nombre = grafo.getNombreNodo(i);
+        if (nombre != nullptr) {
+            std::fprintf(archivo, "%s=%.1f %.1f\n", nombre, grafo.getCoordX(i), grafo.getCoordY(i));
+        }
+    }
+
+    std::fclose(archivo);
+    printf("Coordenadas guardadas: %d nodos en %s\n", n, ruta);
     return true;
 }
 

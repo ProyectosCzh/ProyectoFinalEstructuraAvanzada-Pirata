@@ -70,7 +70,7 @@ bool Explorador::bfsPaso(int nodoInicio, int nodoDestino, int* padres,
 
 bool Explorador::dfsPaso(int nodoInicio, int nodoDestino, int* padres,
                           int& numVisitados, bool* visitados,
-                          int& topeLocal, int* pilaLocal, bool* expandidos,
+                          int& topeLocal, int* pilaLocal,
                           int paso) {
     if (grafo == nullptr || paso < 0) return false;
     int n = grafo->getNumNodos();
@@ -79,7 +79,6 @@ bool Explorador::dfsPaso(int nodoInicio, int nodoDestino, int* padres,
         for (int i = 0; i < n; i++) {
             visitados[i] = false;
             padres[i] = -1;
-            expandidos[i] = false;
         }
         visitados[nodoInicio] = true;
         pilaLocal[0] = nodoInicio;
@@ -98,13 +97,10 @@ bool Explorador::dfsPaso(int nodoInicio, int nodoDestino, int* padres,
     int actual = pilaLocal[topeLocal];
 
     if (actual == nodoDestino) {
-        return true;
+        return true;  // Treasure found
     }
 
-    if (!expandidos[actual]) {
-        expandidos[actual] = true;
-    }
-
+    // Find first unvisited neighbor and push it
     Arista* arista = grafo->getAristas(actual);
     while (arista != nullptr) {
         int vecino = arista->destino;
@@ -162,7 +158,7 @@ bool Explorador::dijkstraPaso(int nodoInicio, int nodoDestino, int* padres, int*
         }
     }
 
-    if (u == -1) return true;
+    if (u == -1) return visitados[nodoDestino];
 
     uActual = u;
     visitados[u] = true;
@@ -198,7 +194,7 @@ bool Explorador::dijkstraPaso(int nodoInicio, int nodoDestino, int* padres, int*
 void Explorador::reconstruirCamino(int destino, int* padres, Lista& camino) {
     camino.vaciar();
 
-    int stack[100];
+    int stack[MAX_NODOS];
     int tope = -1;
     int actual = destino;
 

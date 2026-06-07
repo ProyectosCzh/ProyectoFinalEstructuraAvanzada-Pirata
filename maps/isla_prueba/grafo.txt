@@ -1,0 +1,26 @@
+dirigido: false
+nodos: playa,pueblo_pirata,bahia,r_caleta,p_bosque,montana,bosque,rio,cascada,valle,pantano,ruinas,laguna,templo,atalaya,fortin,mercado,ermita,tesoro
+# =========================================
+# RUTA PRINCIPAL (playa → tesoro)
+# playa → pueblo_pirata → r_caleta → p_bosque → bosque → rio → cascada → valle
+# → ruinas → laguna → templo → atalaya → fortin → mercado → ermita → tesoro
+# =========================================
+playa:        pueblo_pirata(2), bahia(4)
+pueblo_pirata:bahia(3),         r_caleta(5)
+bahia:        playa(4),         pueblo_pirata(3), r_caleta(3)
+r_caleta:     pueblo_pirata(5), p_bosque(3)
+p_bosque:     r_caleta(3),      montana(4),       bosque(3)
+montana:      p_bosque(4)
+bosque:       p_bosque(3),      rio(3)
+rio:          bosque(3),        cascada(4)
+cascada:      rio(4),           valle(3)
+valle:        cascada(3),       pantano(6),       ruinas(4)
+pantano:      valle(6),         ruinas(3)
+ruinas:       valle(4),         pantano(3),       laguna(3)
+laguna:       ruinas(3),        templo(2)
+templo:       laguna(2),        atalaya(3)
+atalaya:      templo(3),        fortin(3)
+fortin:       atalaya(3),       mercado(2)
+mercado:      fortin(2),        ermita(3)
+ermita:       mercado(3),       tesoro(2)
+tesoro:       ermita(2)

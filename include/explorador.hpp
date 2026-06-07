@@ -23,7 +23,7 @@ public:
 
     bool dfsPaso(int nodoInicio, int nodoDestino, int* padres,
                  int& numVisitados, bool* visitados,
-                 int& topeLocal, int* pilaLocal, bool* expandidos,
+                 int& topeLocal, int* pilaLocal,
                  int paso);
 
     bool dijkstraPaso(int nodoInicio, int nodoDestino, int* padres, int* distancias,

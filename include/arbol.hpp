@@ -6,7 +6,6 @@ struct NodoArbol {
     char destino[50];
     NodoArbol** hijos;
     int numHijos;
-    NodoArbol* padre;
 };
 
 class Arbol {
@@ -23,6 +22,7 @@ public:
     NodoArbol* agregarHijo(NodoArbol* padre, const char* pista, const char* destino);
     NodoArbol* getRaiz() const;
     const char* interpretar(const char* pista) const;
+    void limpiar();
 };
 
 #endif

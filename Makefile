@@ -5,7 +5,7 @@ SRC = main.cpp \
       src/lista.cpp src/cola.cpp src/pila.cpp \
       src/diccionario.cpp src/grafo.cpp src/arbol.cpp \
       src/archivos.cpp src/explorador.cpp \
-      core/juego.cpp \
+      core/juego.cpp core/mapa_manager.cpp \
       graphics/renderizador.cpp graphics/panel_info.cpp \
       graphics/animador.cpp graphics/ui_arbol.cpp
 OBJ = $(SRC:.cpp=.o)

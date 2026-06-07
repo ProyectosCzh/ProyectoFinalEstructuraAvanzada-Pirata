@@ -8,6 +8,11 @@
 #define PI 3.14159265f
 #endif
 
+static Color colorTextoParaFondo(Color fondo) {
+    float lum = 0.299f * fondo.r + 0.587f * fondo.g + 0.114f * fondo.b;
+    return (lum > 140.0f) ? BLACK : COLOR_TEXTO_NODO;
+}
+
 Renderizador::Renderizador(Grafo* g, float ancho, float alto) {
     grafo = g;
     numNodos = g->getNumNodos();
@@ -18,11 +23,21 @@ Renderizador::Renderizador(Grafo* g, float ancho, float alto) {
     zoom = 1.0f;
     nodoHover = -1;
     tiempoInicio = GetTime();
-    calcularLayoutRejilla();
+    modoEdicion = false;
+    nodoArrastrando = -1;
+
+    fondoCargado = false;
+
+    if (grafo->tieneCoordenadas()) {
+        usarCoordenadasDesdeGrafo();
+    } else {
+        calcularLayoutRejilla();
+    }
     resetearColores();
 }
 
 Renderizador::~Renderizador() {
+    if (fondoCargado) UnloadTexture(texturaFondo);
     delete[] nodosVisuales;
 }
 
@@ -52,6 +67,73 @@ void Renderizador::calcularLayoutRejilla() {
         nodosVisuales[i].radio = radio;
         nodosVisuales[i].seleccionado = false;
     }
+}
+
+void Renderizador::usarCoordenadasDesdeGrafo() {
+    if (numNodos == 0) return;
+    for (int i = 0; i < numNodos; i++) {
+        float vx = grafo->getCoordX(i);
+        float vy = grafo->getCoordY(i);
+        nodosVisuales[i].posicion.x = (vx / 1000.0f) * anchoPanel;
+        nodosVisuales[i].posicion.y = (vy / 1000.0f) * altoPanel;
+        nodosVisuales[i].radio = 22.0f;
+        nodosVisuales[i].seleccionado = false;
+    }
+}
+
+void Renderizador::cargarFondo(const char* ruta) {
+    if (fondoCargado) {
+        UnloadTexture(texturaFondo);
+        fondoCargado = false;
+    }
+    Image img = LoadImage(ruta);
+    if (img.data != nullptr) {
+        texturaFondo = LoadTextureFromImage(img);
+        UnloadImage(img);
+        fondoCargado = (texturaFondo.id > 0);
+        if (fondoCargado) {
+            printf("Textura de fondo cargada: %dx%d (%s)\n", texturaFondo.width, texturaFondo.height, ruta);
+        }
+    }
+}
+
+void Renderizador::recargarGrafo(Grafo* g, float ancho, float alto) {
+    delete[] nodosVisuales;
+    grafo = g;
+    numNodos = g->getNumNodos();
+    anchoPanel = ancho;
+    altoPanel = alto;
+    nodosVisuales = new NodoVisual[numNodos];
+    offset = { 0, 0 };
+    zoom = 1.0f;
+    nodoHover = -1;
+    modoEdicion = false;
+    nodoArrastrando = -1;
+
+    if (grafo->tieneCoordenadas()) {
+        usarCoordenadasDesdeGrafo();
+    } else {
+        calcularLayoutRejilla();
+    }
+    resetearColores();
+}
+
+void Renderizador::dibujarFondo() {
+    if (!fondoCargado) return;
+
+    float scaleX = anchoPanel / (float)texturaFondo.width;
+    float scaleY = altoPanel / (float)texturaFondo.height;
+    float scale = fminf(scaleX, scaleY);
+
+    float destW = texturaFondo.width * scale * zoom;
+    float destH = texturaFondo.height * scale * zoom;
+    float ox = (anchoPanel * 0.5f + offset.x) - destW * 0.5f;
+    float oy = (altoPanel * 0.5f + offset.y) - destH * 0.5f;
+
+    DrawTexturePro(texturaFondo,
+        { 0, 0, (float)texturaFondo.width, (float)texturaFondo.height },
+        { ox, oy, destW, destH },
+        { 0, 0 }, 0.0f, WHITE);
 }
 
 void Renderizador::aplicarTransform(Vector2& p) const {
@@ -166,8 +248,9 @@ void Renderizador::dibujarNombres() {
         int tx = (int)p.x - anchoTexto / 2;
         int ty = (int)p.y - tamFuente / 2;
 
+        Color colorTexto = colorTextoParaFondo(nodosVisuales[i].color);
         if (r >= tamFuente * 1.1f) {
-            DrawText(nombre, tx, ty, tamFuente, BLACK);
+            DrawText(nombre, tx, ty, tamFuente, colorTexto);
         } else {
             ty = (int)p.y + (int)r + 4;
             DrawRectangle(tx - 3, ty - 2, anchoTexto + 6, tamFuente + 4, COLOR_PANEL_INTERNO);
@@ -217,8 +300,8 @@ void Renderizador::dibujarTooltip(Vector2 mousePos, const Juego& juego) {
     char linea1[64];
     std::sprintf(linea1, "Ubicacion: %s", nombre);
 
-    int w = 260;
-    int h = pista ? 60 : 36;
+    int w = 300;
+    int h = pista ? 66 : 36;
     int tx = (int)mousePos.x + 18;
     int ty = (int)mousePos.y + 18;
     if (tx + w > (int)anchoPanel) tx = (int)mousePos.x - w - 10;
@@ -228,8 +311,8 @@ void Renderizador::dibujarTooltip(Vector2 mousePos, const Juego& juego) {
     DrawRectangleLinesEx({ (float)tx, (float)ty, (float)w, (float)h }, 1, COLOR_DORADO);
     DrawText(linea1, tx + 6, ty + 4, 14, COLOR_DORADO);
     if (pista != nullptr) {
-        DrawText(pista, tx + 6, ty + 24, 12, COLOR_TEXTO);
-        DrawText("[click para seleccionar]", tx + 6, ty + 42, 10, COLOR_TEXTO_OSCURO);
+        DrawText(pista, tx + 6, ty + 26, 13, COLOR_TEXTO);
+        DrawText("[click para seleccionar]", tx + 6, ty + 48, 11, COLOR_TEXTO_OSCURO);
     }
 }
 
@@ -239,6 +322,7 @@ void Renderizador::actualizarInput(Vector2 mousePos) {
 
 void Renderizador::dibujarConEstado(Juego& juego) {
     sincronizarConJuego(juego);
+    dibujarFondo();
     const Lista& ruta = juego.getRutaOptima();
     bool dirFlag = grafo->esDirigido();
     dibujarAristas(&ruta, dirFlag);
@@ -298,4 +382,28 @@ void Renderizador::resetearColores() {
             nodosVisuales[i].color = COLOR_NODO_NO_VIS;
         }
     }
+}
+
+bool Renderizador::iniciarArrastreNodo(Vector2 mousePos) {
+    if (!modoEdicion) return false;
+    int idx = nodoBajoMouse(mousePos);
+    if (idx >= 0) {
+        nodoArrastrando = idx;
+        return true;
+    }
+    return false;
+}
+
+void Renderizador::actualizarArrastreNodo(Vector2 mousePos) {
+    if (nodoArrastrando < 0) return;
+    Vector2 p = mousePos;
+    deshacerTransform(p);
+    nodosVisuales[nodoArrastrando].posicion = p;
+    float virtX = (p.x / anchoPanel) * 1000.0f;
+    float virtY = (p.y / altoPanel) * 1000.0f;
+    grafo->setCoordenada(nodoArrastrando, virtX, virtY);
+}
+
+void Renderizador::finalizarArrastreNodo() {
+    nodoArrastrando = -1;
 }

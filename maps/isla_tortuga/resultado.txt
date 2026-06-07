@@ -1,0 +1,9 @@
+RUTA AL TESORO
+==============
+
+Inicio: pueblo
+Ruta: pueblo -> playa -> dunas -> mirador -> acantilado -> tesoro
+Costo total: 51
+Visitados: 6 nodos
+Algoritmo usado: DFS
+

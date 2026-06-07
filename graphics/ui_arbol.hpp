@@ -11,7 +11,7 @@ private:
     Rectangle area;
     Vector2 scroll;
 
-    void dibujarNodo(NodoArbol* nodo, float x, float y, float dx, float dy, int nivel);
+    void dibujarCadena(NodoArbol* nodo, float x, float y, float dy);
     int contarNiveles(NodoArbol* nodo);
 
 public:

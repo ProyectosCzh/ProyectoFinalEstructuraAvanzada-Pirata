@@ -19,6 +19,7 @@ public:
     ~Diccionario();
     void insertar(const char* clave, const char* valor);
     const char* obtener(const char* clave) const;
+    void vaciar();
 };
 
 #endif

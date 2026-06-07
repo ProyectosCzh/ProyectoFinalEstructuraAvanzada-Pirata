@@ -1,6 +1,6 @@
 # El Tesoro del Pirata
 
-Proyecto academico de Estructuras de Datos y Algoritmos en C++17 con representacion grafica en vivo usando raylib 5.x bajo MinGW-w64 (MSYS2). El programa explora una isla representada como **grafo**, corre **BFS/DFS/Dijkstra** paso a paso, e interpreta **pistas** mediante un arbol encadenado. Todas las estructuras de datos fueron implementadas manualmente sin STL.
+Proyecto academico de Estructuras de Datos y Algoritmos en C++17 con representacion grafica en vivo usando raylib 5.x bajo MinGW-w64 (MSYS2). El programa explora una isla representada como **grafo**, corre **BFS/DFS/Dijkstra** paso a paso, e interpreta **pistas** mediante un arbol encadenado. El mapa se renderiza sobre una imagen de fondo con coordenadas virtuales normalizadas (0–1000), zoom/pan sincronizado con el fondo, y edicion interactiva de posiciones de nodos. Todas las estructuras de datos fueron implementadas manualmente sin STL.
 
 ---
 
@@ -13,6 +13,8 @@ Proyecto academico de Estructuras de Datos y Algoritmos en C++17 con representac
 4. La animacion arranca automaticamente en modo **AUTO**
 5. Al llegar al tesoro, la ruta optima se pinta en **rojo** en el mapa
 6. Presionar **LIMPIAR** (o **C**) para reiniciar y probar otro algoritmo
+7. Presionar **EDITAR** (o **E**) para arrastrar nodos y reposicionarlos
+8. Presionar **K** o boton **G.CORDS** para guardar las coordenadas ajustadas
 
 ### Flujo completo recomendado
 **Desde playa hasta el tesoro con BFS:**
@@ -27,13 +29,14 @@ Proyecto academico de Estructuras de Datos y Algoritmos en C++17 con representac
 | Modo | Que hace | Como se activa |
 |------|----------|----------------|
 | **AUTO** | La animacion avanza sola cada ~500ms | Automatico al iniciar un algoritmo. Se muestra en verde |
-| **MANUAL** | Hay que presionar **>>** (o **N**) para cada paso | Se activa al presionar **||** (o **P**). Se muestra en dorado |
+| **MANUAL** | Hay que presionar **>>** (o **N**) para cada paso | Se activa al presionar **\|\|** (o **P**). Se muestra en dorado |
 | **PISTAS** | Navegacion guiada por pistas (16 pasos) | Boton **PISTAS** (o **F**) con un nodo seleccionado |
+| **EDITAR** | Arrastrar nodos con el mouse para reposicionarlos | Boton **EDITAR** (o **E**). Guardar con **G.CORDS** o **K** |
 
 ### Controles basicos
-- **Click izquierdo** en nodo → seleccionar ubicacion
-- **Click derecho + arrastrar** → mover el mapa (pan)
-- **Rueda del mouse** → zoom en el mapa / scroll en el arbol de pistas
+- **Click izquierdo** en nodo → seleccionar ubicacion (o arrastrar en modo edicion)
+- **Click derecho + arrastrar** → mover el mapa (pan), el fondo se mueve con los nodos
+- **Rueda del mouse** → zoom sincronizado (mapa + nodos) / scroll en arbol de pistas
 - **Botones** en la barra inferior o sus **teclas** asociadas
 
 ---
@@ -59,7 +62,7 @@ tesoropirata/
   src/             8 .cpp      --- implementaciones
   graphics/        9 archivos  --- renderizado con raylib
   core/            4 archivos  --- logica del juego
-  data/            3 archivos  --- grafo, pistas, resultados
+  data/            4 archivos  --- grafo, pistas, coordenadas, resultados
   main.cpp                   --- entry point + game loop
   Makefile                   --- compilacion con g++
   README.md                  --- este archivo
@@ -69,9 +72,9 @@ tesoropirata/
 
 ## include/ --- Headers de estructuras de datos
 
-### lista.hpp --- Lista doblemente enlazada
+### lista.hpp --- Lista simplemente enlazada
 
-Nodos con punteros a `anterior` y `siguiente`, cabeza y cola, y un contador `tam`. Permite insertar al final en O(1), acceso por indice en O(n), busqueda lineal, y liberacion total con `vaciar()`. Se usa para almacenar la ruta optima al tesoro producida por BFS, DFS o Dijkstra, y para caminos intermedios durante la reconstruccion desde el arreglo de padres.
+Nodos con puntero a `siguiente`, cabeza y cola, y un contador `tam`. Permite insertar al final en O(1), acceso por indice en O(n), busqueda lineal, y liberacion total con `vaciar()`. Se usa para almacenar la ruta optima al tesoro producida por BFS, DFS o Dijkstra, y para caminos intermedios durante la reconstruccion desde el arreglo de padres.
 
 ### cola.hpp --- Cola circular
 
@@ -87,7 +90,7 @@ Arreglo de 101 buckets, cada uno una lista enlazada de `ParClaveValor` (clave te
 
 ### grafo.hpp --- Grafo ponderado no dirigido
 
-Arreglo dinamico de `NodoGrafo`, cada uno con un nombre y una lista enlazada de `Arista` (destino, peso, siguiente). Permite agregar nodos, agregar aristas con peso, buscar por nombre, y consultar adyacencias. Se carga desde `grafo.txt` y representa el mapa de la isla de 28 nodos. Es la estructura central sobre la que operan BFS, DFS y Dijkstra.
+Arreglo dinamico de `NodoGrafo`, cada uno con un nombre, coordenadas virtuales (x, y en rango 0-1000) para posicionamiento sobre el fondo, y una lista enlazada de `Arista` (destino, peso, siguiente). Permite agregar nodos, agregar aristas con peso, buscar por nombre, y consultar adyacencias. Se carga desde `grafo.txt` y `coords.txt`. Representa el mapa de la isla de 19 nodos. Es la estructura central sobre la que operan BFS, DFS y Dijkstra.
 
 ### arbol.hpp --- Arbol de pistas n-ario
 
@@ -95,7 +98,7 @@ Cada `NodoArbol` tiene una pista (texto), un destino (nombre de ubicacion), un a
 
 ### archivos.hpp --- File I/O
 
-Cuatro funciones libres: `cargarGrafo()` lee `data/grafo.txt` con formato `origen:destino(peso),...`; `cargarPistas()` lee `data/pistas.txt` al diccionario; `cargarArbolPistas()` construye el arbol como cadena anidada; `guardarResultado()` escribe `data/resultado.txt` con la ruta encontrada. Todas retornan `bool` para verificacion de errores.
+Seis funciones: `cargarGrafo()` lee `data/grafo.txt` con formato `origen:destino(peso),...`; `cargarPistas()` lee `data/pistas.txt` al diccionario; `cargarArbolPistas()` construye el arbol como cadena anidada; `cargarCoordenadas()` lee `data/coords.txt` con formato `nombre=x y`; `guardarCoordenadas()` escribe de vuelta las coordenadas modificadas durante la edicion interactiva; `guardarResultado()` escribe `data/resultado.txt` con la ruta encontrada. Todas retornan `bool` para verificacion de errores.
 
 ### explorador.hpp --- BFS, DFS, Dijkstra paso a paso
 
@@ -107,7 +110,7 @@ Contiene `configurar()` para vincular referencias al grafo, cola y pila, y tres 
 
 ### juego.hpp / juego.cpp
 
-Orquesta toda la logica del programa. Define `EstadoJuego` con 5 estados: `INICIO`, `EXPLORANDO_BFS`, `EXPLORANDO_DFS`, `EXPLORANDO_DIJKSTRA`, `NAVEGANDO_PISTAS` y `COMPLETADO`. La clase `Juego` mantiene el grafo, diccionario, arbol, cola/pila para animacion, ruta optima, y el explorador. Provee metodos publicos: `cargarDatos()` para lectura de archivos, `seleccionarNodo()` para fijar el nodo clickeado, `iniciarBFS/DFS/Dijkstra()` para preparar estado, `iniciarNavegacionPistas()` para el recorrido por pistas, `pasoAnimacion()` que avanza un paso segun el estado actual, y `limpiar()` para reiniciar todo. Incluye getters para que la capa grafica consulte visitados, cola, pila, ruta, pista activa, nodo procesando, etc. Los helpers privados `iniciarAlgoritmo()` y `finalizarExploracion()` eliminan la duplicacion de codigo entre los tres algoritmos.
+Orquesta toda la logica del programa. Define `EstadoJuego` con 5 estados: `INICIO`, `EXPLORANDO_BFS`, `EXPLORANDO_DFS`, `EXPLORANDO_DIJKSTRA`, `NAVEGANDO_PISTAS` y `COMPLETADO`. La clase `Juego` mantiene el grafo, diccionario, arbol, cola/pila para animacion, ruta optima, y el explorador. Provee metodos publicos: `cargarDatos()` para lectura de archivos (incluyendo coordenadas), `seleccionarNodo()` para fijar el nodo clickeado, `iniciarBFS/DFS/Dijkstra()` para preparar estado, `iniciarNavegacionPistas()` para el recorrido por pistas, `pasoAnimacion()` que avanza un paso segun el estado actual, `guardarCoordenadas()` para persistir cambios del modo edicion, y `limpiar()` para reiniciar todo. Incluye getters para que la capa grafica consulte visitados, cola, pila, ruta, pista activa, nodo procesando, etc. Los helpers privados `iniciarAlgoritmo()` y `finalizarExploracion()` eliminan la duplicacion de codigo entre los tres algoritmos.
 
 ---
 
@@ -119,8 +122,7 @@ Todos son tipo `Color` de raylib (RGBA 0-255):
 
 | Constante             | RGB           | Uso                            |
 |-----------------------|---------------|--------------------------------|
-| COLOR_FONDO           | 24, 35, 60    | Fondo degradado superior       |
-| COLOR_NODO_NO_VIS     | 130, 130, 150 | Nodo no visitado               |
+| COLOR_NODO_NO_VIS     | 40, 40, 55    | Nodo no visitado (oscuro para contraste con fondo) |
 | COLOR_NODO_EN_COLA    | 255, 220, 60  | Nodo en cola/pila (frontier)   |
 | COLOR_NODO_VISITADO   | 80, 200, 120  | Nodo ya visitado               |
 | COLOR_NODO_PROCESANDO | 255, 140, 0   | Nodo siendo procesado ahora    |
@@ -144,13 +146,17 @@ Todos son tipo `Color` de raylib (RGBA 0-255):
 3. Verde (visitado)
 4. Amarillo (en cola/pila)
 5. Dorado (tesoro)
-6. Gris (no visitado)
+6. Gris oscuro (no visitado)
 
 ---
 
-### renderizador.hpp / renderizador.cpp --- Renderizado del grafo con pan/zoom
+### renderizador.hpp / renderizador.cpp --- Renderizado del grafo con fondo, zoom/pan y modo edicion
 
-Mantiene un arreglo `NodoVisual` paralelo a los nodos del grafo, cada uno con posicion (Vector2), color y radio. Calcula el layout inicial como una rejilla (el grafo no tiene coordenadas inherentes). Provee transformacion de coordenadas mundo ↔ pantalla mediante `aplicarTransform()` (zoom + offset) y `deshacerTransform()` para el hit test. Dibuja aristas con `DrawLineEx` y etiquetas de peso, nodos como circulos con bordes y anillos de seleccion, nombres con `DrawText`, y una leyenda semitransparente. `sincronizarConJuego()` consulta el estado de cada nodo (visitado, en ruta, en cola, procesando) y asigna colores con prioridad: rojo ruta > naranja procesando > verde visitado > amarillo frontier > dorado tesoro. `nodoBajoMouse()` invierte la transformacion antes de medir distancia, eliminando el efecto del zoom. Soporta pan con click derecho + arrastrar y zoom con la rueda del mouse.
+Mantiene un arreglo `NodoVisual` paralelo a los nodos del grafo, cada uno con posicion (Vector2), color y radio. Soporta dos modos de layout: coordenadas cargadas desde `data/coords.txt` (virtuales 0-1000 mapeadas al panel) o rejilla automatica como fallback. Carga lazy la imagen de fondo y la dibuja aplicando la misma transformacion (zoom + pan) que los nodos, manteniendo la alineacion perfecta en todo momento.
+
+Provee transformacion de coordenadas mundo ↔ pantalla mediante `aplicarTransform()` (zoom + offset) y `deshacerTransform()` para el hit test. Dibuja aristas con `DrawLineEx` y etiquetas de peso, nodos como circulos con bordes y anillos de seleccion, nombres con `DrawText`, y una leyenda semitransparente. `sincronizarConJuego()` consulta el estado de cada nodo (visitado, en ruta, en cola, procesando) y asigna colores con prioridad. `nodoBajoMouse()` invierte la transformacion antes de medir distancia.
+
+Incluye modo de edicion: al activarlo, los nodos pueden arrastrarse con el mouse y sus coordenadas virtuales se actualizan en tiempo real en el grafo. Soporta pan con click derecho + arrastrar y zoom con la rueda del mouse.
 
 ---
 
@@ -174,57 +180,42 @@ Panel inferior derecho con titulo "ARBOL DE PISTAS". Recibe el arbol de pistas (
 
 ## main.cpp --- Entry point y game loop
 
-Punto de entrada del programa. En la fase de **inicializacion** crea las instancias de `Juego` (que a su vez carga grafo, pistas y arbol), `Renderizador` (calcula layout de nodos), `PanelInfo` (bitacora superior derecha), `UIArbol` (arbol inferior derecho), `Animador` (control de reproduccion), y los 13 botones de la barra inferior. Abre la ventana a 1600x900 con `InitWindow` y fija 60 FPS.
+Punto de entrada del programa. En la fase de **inicializacion** crea las instancias de `Juego` (que a su vez carga grafo, pistas, arbol y coordenadas), `Renderizador` (carga lazy del fondo y layout por coordenadas), `PanelInfo` (bitacora superior derecha), `UIArbol` (arbol inferior derecho), `Animador` (control de reproduccion), y los 15 botones de la barra inferior. Abre la ventana a 1600x900 con `InitWindow` y fija 60 FPS.
 
 El **game loop** se repite hasta que el usuario cierra la ventana. Cada iteracion:
-1. **Input**: procesa click izquierdo (selecciona nodo via hit test), click derecho (arrastra mapa), rueda (zoom en grafo, scroll en arbol), botones y teclas (BFS/DFS/Dijkstra/Pistas, play/pause, paso manual, velocidad, limpiar, guardar, reset vista, salir)
+1. **Input**: procesa click izquierdo (selecciona nodo via hit test, o arrastra en modo edicion), click derecho (arrastra mapa con fondo sincronizado), rueda (zoom en grafo, scroll en arbol), botones y teclas (BFS/DFS/Dijkstra/Pistas, play/pause, paso manual, velocidad, limpiar, guardar, editar, guardar coordenadas, reset vista, salir)
 2. **Sincronizacion**: `animador.actualizar()` decide si avanza un paso de animacion, `renderizador.sincronizarConJuego()` actualiza colores de nodos, `uiArbol.setNodoActivo()` resalta la pista actual
-3. **Render**: dibuja fondo degradado, titulo dorado, mapa (grafo con colores), bitacora (panel derecho superior), arbol de pistas (panel derecho inferior), barra de botones, controles de animacion (AUTO/MANUAL, paso, velocidad), zoom porcentual, y mensaje de ayuda si no hay nodo seleccionado
+3. **Render**: dibuja fondo degradado, titulo dorado, fondo del mapa, mapa (grafo con colores sobre el fondo), bitacora (panel derecho superior), arbol de pistas (panel derecho inferior), barra de botones, controles de animacion (AUTO/MANUAL, paso, velocidad), zoom porcentual, mensaje de ayuda si no hay nodo seleccionado, e indicador de modo edicion
 
 ---
 
 ## data/ --- Archivos de datos
 
-### grafo.txt --- Mapa de la isla (28 nodos, 4 regiones)
+### grafo.txt --- Mapa de la isla (19 nodos, ruta principal + 3 ramas)
 
 ```
 dirigido: false
-nodos: playa,pueblo_pirata,bahia,acantilado,r_caleta,r_costa,p_bosque,montana,desfiladero,cima_arbol,cueva,caverna,bosque,l_esmeralda,rio,cascada,valle,pantano,ruinas,laguna,templo,mirador,atalaya,fortin,mercado,ermita,gruta_coral,tesoro
+nodos: playa,pueblo_pirata,bahia,r_caleta,p_bosque,montana,bosque,rio,cascada,valle,pantano,ruinas,laguna,templo,atalaya,fortin,mercado,ermita,tesoro
 
-# REGION 1 --- COSTA
-playa:         pueblo_pirata(2), bahia(4), acantilado(6)
-pueblo_pirata: bahia(3), r_caleta(5)
-bahia:         acantilado(4), r_caleta(3), gruta_coral(7)
-acantilado:    r_costa(5), desfiladero(9)
-r_caleta:      p_bosque(3), r_costa(4)
-r_costa:       p_bosque(2), bosque(6)
-
-# REGION 2 --- MONTANAS
-p_bosque:      montana(4), bosque(3)
-montana:       desfiladero(3), cueva(2)
-desfiladero:   cima_arbol(5), valle(7)
-cima_arbol:    mirador(4), cascada(8)
-cueva:         bosque(4), caverna(3)
-caverna:       laguna(5), pantano(7)
-
-# REGION 3 --- BOSQUE Y RIO
-bosque:        rio(3), l_esmeralda(2)
-rio:           cascada(4), valle(5), pantano(6)
-cascada:       valle(3), laguna(8)
-valle:         ruinas(4), laguna(5)
-l_esmeralda:   pantano(4), laguna(6)
-pantano:       ruinas(3), mirador(6)
-
-# REGION 4 --- INTERIOR
-ruinas:        laguna(3), templo(4)
-laguna:        templo(2), mirador(5)
-templo:        atalaya(3), fortin(5)
-mirador:       atalaya(2), ermita(6)
-atalaya:       fortin(3), mercado(5)
-fortin:        mercado(2), ermita(4)
-mercado:       ermita(3), gruta_coral(8)
-ermita:        tesoro(2)
-gruta_coral:   tesoro(5)
+playa:        pueblo_pirata(2), bahia(4)
+pueblo_pirata:bahia(3),         r_caleta(5)
+bahia:        playa(4),         pueblo_pirata(3), r_caleta(3)
+r_caleta:     pueblo_pirata(5), p_bosque(3)
+p_bosque:     r_caleta(3),      montana(4),       bosque(3)
+montana:      p_bosque(4)
+bosque:       p_bosque(3),      rio(3)
+rio:          bosque(3),        cascada(4)
+cascada:      rio(4),           valle(3)
+valle:        cascada(3),       pantano(6),       ruinas(4)
+pantano:      valle(6),         ruinas(3)
+ruinas:       valle(4),         pantano(3),       laguna(3)
+laguna:       ruinas(3),        templo(2)
+templo:       laguna(2),        atalaya(3)
+atalaya:      templo(3),        fortin(3)
+fortin:       atalaya(3),       mercado(2)
+mercado:      fortin(2),        ermita(3)
+ermita:       mercado(3),       tesoro(2)
+tesoro:       ermita(2)
 ```
 
 **Formato:**
@@ -233,26 +224,24 @@ gruta_coral:   tesoro(5)
 - `origen:destino1(peso1),destino2(peso2),...` --- aristas con peso
 - Lineas con `#` son comentarios ignorados
 
+### coords.txt --- Coordenadas virtuales de nodos (0-1000)
+
+```
+# Coordenadas virtuales 0-1000
+# Formato: nombre=x y
+playa=850 750
+pueblo_pirata=780 680
+...
+```
+
+Coordenadas normalizadas en rango 0-1000, independientes de la resolucion de ventana. El renderizador las mapea a pixeles del panel y las transforma con zoom/pan. Modificables en tiempo real via modo edicion y persistibles con `guardarCoordenadas()`.
+
 ### pistas.txt --- Pistas por ubicacion (formato 3 campos)
 
 ```
 # CADENA: playa -> pueblo_pirata -> r_caleta -> ... -> tesoro
 playa:Los pescadores del pueblo saben algo:pueblo_pirata
-pueblo_pirata:El humo en la caleta escondida senala el camino:r_caleta
-r_caleta:Las huellas en el barro llevan al bosque espeso:p_bosque
-p_bosque:Los arboles mas viejos guardan el secreto:bosque
-bosque:Sigue el murmullo del agua corriente:rio
-rio:Remonta la corriente hasta que el agua caiga del cielo:cascada
-cascada:El velo de agua oculta un pasaje:valle
-valle:Entre las colinas verdes yacen piedras antiguas:ruinas
-ruinas:El reflejo en el ojo de la estatua apunta a la laguna:laguna
-laguna:El templo emerge entre la niebla matutina:templo
-templo:Desde la torre mas alta se divisa una luz:atalaya
-atalaya:La fortaleza junto al acantilado resguarda un secreto:fortin
-fortin:El cofre del capitan esta vacio, la llave esta en el mercado:mercado
-mercado:El ermitano del cerro conoce el ultimo paso:ermita
-ermita:El tesoro brilla bajo la luz del sol poniente:tesoro
-tesoro:!Lo has encontrado!:tesoro
+...
 ```
 
 **Formato:** `ubicacion:pista_texto:destino_siguiente` (16 entradas en cadena).
@@ -330,8 +319,8 @@ mingw32-make clean
 | Entrada        | Accion                          | Descripcion tecnica                                          |
 |----------------|---------------------------------|--------------------------------------------------------------|
 | Click nodo     | seleccionarNodo()               | Hit test con distancia euclidiana en coordenadas mundo       |
-| Click der + arrastrar | pan()                   | Arrastra el mapa (offset en Renderizador)                    |
-| Rueda mouse    | Zoom / Scroll                   | Zoom en grafo, scroll en arbol de pistas                     |
+| Click der + arrastrar | pan()                   | Arrastra el mapa (offset en Renderizador), fondo sincronizado |
+| Rueda mouse    | Zoom / Scroll                   | Zoom sincronizado en grafo y fondo, scroll en arbol de pistas |
 
 ### Botones en pantalla
 
@@ -348,6 +337,8 @@ mingw32-make clean
 | +         | Mas rapido (-100ms)          | + (tecla) |
 | LIMPIAR   | Limpia todo (estados, colores, arbol, seleccion) | C |
 | GUARDAR   | Guarda ruta en resultado.txt | S |
+| EDITAR    | Toggle modo edicion de nodos | E |
+| G.CORDS   | Guarda coordenadas actuales en coords.txt | K |
 | RESET     | Reset zoom/pan/scroll        | V |
 | SALIR     | Cierra programa              | Esc |
 
@@ -369,22 +360,23 @@ mingw32-make clean
 ```
 +------------------------------------------+-----------------------------+
 |                                          |  BITACORA DE EXPLORACION   |
-|   Mapa del grafo (28 nodos)             |  - Nodo seleccionado       |
-|   Pan + Zoom + click seleccion          |  - Pista actual            |
-|                                          |  - Costo acumulado         |
-|   Colores nodo:                         |  - Estado de exploracion   |
-|   Gris  = no visitado                   |  - Procesando: [nombre]    |
-|   Naranja = procesando ahora            |  - Ruta encontrada         |
-|   Verde  = visitado                     |                             |
-|   Rojo   = ruta final                   |  [COLA (BFS)]  [PILA (DFS)]|
-|   Amarillo = en cola/pila (frontier)    |  barras visibles en vivo   |
-|   Dorado = tesoro                       +-----------------------------+
-|   Anillos blancos = seleccionado        |  ARBOL DE PISTAS           |
-|                                          |  (pista activa resaltada)  |
-|   Aristas rojas = ruta final            |  "Cada pista lleva a la    |
+|   Fondo de mapa                          |  - Nodo seleccionado       |
+|   Mapa del grafo (19 nodos)             |  - Pista actual            |
+|   Pan + Zoom sincronizado               |  - Costo acumulado         |
+|   Click selecciona / Editar arrastra     |  - Estado de exploracion   |
+|                                          |  - Procesando: [nombre]    |
+|   Colores nodo:                         |  - Ruta encontrada         |
+|   Gris o  = no visitado                 |                             |
+|   Naranja = procesando ahora            |  [COLA (BFS)]  [PILA (DFS)]|
+|   Verde  = visitado                     |  barras visibles en vivo   |
+|   Rojo   = ruta final                   +-----------------------------+
+|   Amarillo = en cola/pila (frontier)    |  ARBOL DE PISTAS           |
+|   Dorado = tesoro                       |  (pista activa resaltada)  |
+|   Anillos blancos = seleccionado        |  "Cada pista lleva a la    |
 |                                          |   siguiente ubicacion"     |
+|   Aristas rojas = ruta final            |                             |
 +------------------------------------------+-----------------------------+
-| [BFS][DFS][DIJKSTRA][PISTAS] [||][>>][AUTO] [-][+] [LIMPIAR][GUARDAR][RESET][SALIR] |
+| [BFS][DFS][DIJKSTRA][PISTAS] [||][>>][AUTO] [-][+] [LIMPIAR][GUARDAR][EDITAR][G.CORDS][RESET][SALIR] |
 | AUTO REPRODUCIENDO / MANUAL PAUSADO  -  Paso N/N  -  Vel NNNms                    |
 +------------------------------------------------------------------------------+
 ```

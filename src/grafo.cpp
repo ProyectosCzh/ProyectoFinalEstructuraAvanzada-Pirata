@@ -7,9 +7,12 @@ Grafo::Grafo(int capacidad) {
     this->numNodos = 0;
     this->nodos = new NodoGrafo[capacidad];
     this->dirigido = false;
+    this->coordsDefinidas = false;
     for (int i = 0; i < capacidad; i++) {
         nodos[i].aristas = nullptr;
         nodos[i].nombre[0] = '\0';
+        nodos[i].x = 0.0f;
+        nodos[i].y = 0.0f;
     }
 }
 
@@ -34,6 +37,8 @@ int Grafo::agregarNodo(const char* nombre) {
     std::strncpy(nodos[numNodos].nombre, nombre, 49);
     nodos[numNodos].nombre[49] = '\0';
     nodos[numNodos].aristas = nullptr;
+    nodos[numNodos].x = 0.0f;
+    nodos[numNodos].y = 0.0f;
     numNodos++;
     return numNodos - 1;
 }
@@ -75,4 +80,47 @@ Arista* Grafo::getAristas(int nodo) const {
 
 int Grafo::getNumNodos() const {
     return numNodos;
+}
+
+void Grafo::setCoordenada(int indice, float x, float y) {
+    if (indice >= 0 && indice < numNodos) {
+        nodos[indice].x = x;
+        nodos[indice].y = y;
+    }
+}
+
+float Grafo::getCoordX(int indice) const {
+    if (indice < 0 || indice >= numNodos) return 0.0f;
+    return nodos[indice].x;
+}
+
+float Grafo::getCoordY(int indice) const {
+    if (indice < 0 || indice >= numNodos) return 0.0f;
+    return nodos[indice].y;
+}
+
+bool Grafo::tieneCoordenadas() const {
+    return coordsDefinidas;
+}
+
+void Grafo::marcarCoordenadas(bool val) {
+    coordsDefinidas = val;
+}
+
+void Grafo::limpiar() {
+    for (int i = 0; i < numNodos; i++) {
+        Arista* actual = nodos[i].aristas;
+        while (actual != nullptr) {
+            Arista* siguiente = actual->siguiente;
+            delete actual;
+            actual = siguiente;
+        }
+        nodos[i].aristas = nullptr;
+        nodos[i].nombre[0] = '\0';
+        nodos[i].x = 0.0f;
+        nodos[i].y = 0.0f;
+    }
+    numNodos = 0;
+    dirigido = false;
+    coordsDefinidas = false;
 }

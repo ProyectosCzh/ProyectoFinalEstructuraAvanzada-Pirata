@@ -1,0 +1,9 @@
+RUTA AL TESORO
+==============
+
+Inicio: pueblo_pirata
+Ruta: pueblo_pirata -> r_caleta -> p_bosque -> bosque -> rio -> cascada -> valle -> ruinas -> laguna -> templo -> atalaya -> fortin -> mercado -> ermita -> tesoro
+Costo total: 43
+Visitados: 19 nodos
+Algoritmo usado: Dijkstra
+

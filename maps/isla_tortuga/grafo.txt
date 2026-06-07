@@ -1,0 +1,25 @@
+dirigido: false
+nodos: playa,pueblo,caleta,valle,laguna,tesoro,dunas,acantilado,mirador,puerto,manglar,ruinas,mina
+
+# =========================================
+# DISENO: Cada algoritmo encuentra una ruta DISTINTA al tesoro:
+#   BFS:      playa -> dunas -> acantilado -> tesoro       (3 saltos, peso 45)
+#   DFS:      playa -> pueblo -> caleta -> valle -> laguna -> tesoro  (5 saltos, peso 25)
+#   Dijkstra: playa -> puerto -> manglar -> ruinas -> mina -> tesoro  (5 saltos, peso 14)
+# =========================================
+# NOTA: El orden de las aristas por nodo esta deliberado
+#       para que DFS explore pueblo/caleta/valle/laguna primero.
+
+playa:       puerto(2), dunas(18), pueblo(5)
+pueblo:      manglar(6), caleta(5), playa(5)
+caleta:      pueblo(5), valle(5)
+valle:       mirador(8), laguna(5), caleta(5)
+laguna:      valle(5), tesoro(5)
+tesoro:      acantilado(12), mina(4), laguna(5)
+dunas:       acantilado(15), mirador(10), playa(18)
+acantilado:  tesoro(12), mirador(6), dunas(15)
+mirador:     valle(8), acantilado(6), dunas(10)
+puerto:      manglar(2), playa(2)
+manglar:     ruinas(3), pueblo(6), puerto(2)
+ruinas:      mina(3), manglar(3)
+mina:        tesoro(4), ruinas(3)

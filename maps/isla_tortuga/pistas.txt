@@ -1,0 +1,7 @@
+# RUTA DE PISTAS: playa -> pueblo -> caleta -> valle -> laguna -> tesoro
+playa:El loro en la palmera repite "pueblo" sin cesar:pueblo
+pueblo:La anciana del mercado seniala el camino a la caleta:caleta
+caleta:Las marcas de marea en las rocas apuntan al valle:valle
+valle:Los petroglifos en la cueva muestran una laguna:laguna
+laguna:El reflejo del sol en el agua revela el tesoro:tesoro
+tesoro:!Lo has encontrado!:tesoro

@@ -13,8 +13,6 @@ public:
     Cola(int capacidad = 100);
     ~Cola();
     void encolar(int valor);
-    int desencolar();
-    bool estaVacia() const;
     bool estaLlena() const;
     int obtenerTam() const;
     int getDatoEn(int indice) const;

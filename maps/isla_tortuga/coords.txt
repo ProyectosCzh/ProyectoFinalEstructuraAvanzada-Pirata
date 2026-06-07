@@ -1,0 +1,16 @@
+# Coordenadas virtuales 0-1000
+# Formato: nombre=x y
+
+playa=789.4 375.3
+pueblo=497.7 402.5
+caleta=292.8 527.2
+valle=570.6 574.1
+laguna=432.9 690.1
+tesoro=123.8 755.6
+dunas=851.9 530.9
+acantilado=662.0 442.0
+mirador=898.1 766.7
+puerto=693.3 230.9
+manglar=245.4 396.3
+ruinas=145.8 507.4
+mina=223.4 606.2

@@ -23,21 +23,6 @@ void Cola::encolar(int valor) {
     tam++;
 }
 
-int Cola::desencolar() {
-    if (estaVacia()) {
-        printf("Error: cola vacia\n");
-        return -1;
-    }
-    int valor = datos[frente];
-    frente = (frente + 1) % capacidad;
-    tam--;
-    return valor;
-}
-
-bool Cola::estaVacia() const {
-    return tam == 0;
-}
-
 bool Cola::estaLlena() const {
     return tam == capacidad;
 }

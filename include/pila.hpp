@@ -12,7 +12,6 @@ public:
     ~Pila();
     void push(int valor);
     int pop();
-    int top() const;
     bool estaVacia() const;
     int obtenerTam() const;
     void vaciar();
